@@ -29,9 +29,9 @@ function App() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   // Draggable faceplate positions (three independent faceplates)
-  const [levelFaceplatePosition, setLevelFaceplatePosition] = useState({ x: 1200, y: 150 })
-  const [pressureFaceplatePosition, setPressureFaceplatePosition] = useState({ x: 1200, y: 520 })
-  const [flowFaceplatePosition, setFlowFaceplatePosition] = useState({ x: 1200, y: 760 })
+  const [levelFaceplatePosition, setLevelFaceplatePosition] = useState({ x: 850, y: 150 })
+  const [pressureFaceplatePosition, setPressureFaceplatePosition] = useState({ x: 850, y: 520 })
+  const [flowFaceplatePosition, setFlowFaceplatePosition] = useState({ x: 850, y: 760 })
 
   const [isLevelDragging, setIsLevelDragging] = useState(false)
   const [isPressureDragging, setIsPressureDragging] = useState(false)
