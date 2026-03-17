@@ -8,6 +8,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #1a1a1a;
   color: #e0e0e0;
+  overflow: auto;
 }
 
 .hmi-container {
@@ -19,6 +20,7 @@ body {
   margin: 0 auto;
   transform-origin: top center;
   transform: scale(0.85);
+  overflow: visible;
 }
 
 /* Menu Bar */
@@ -113,6 +115,7 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: visible;
 }
 
 .process-title {
