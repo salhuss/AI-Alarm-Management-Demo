@@ -57,6 +57,14 @@ function App() {
   const [flowScale, setFlowScale] = useState(1)
   const [vesselScale, setVesselScale] = useState(1)
 
+  // Resize drag states
+  const [isResizingTrend, setIsResizingTrend] = useState(false)
+  const [isResizingVessel, setIsResizingVessel] = useState(false)
+  const [isResizingLevel, setIsResizingLevel] = useState(false)
+  const [isResizingPressure, setIsResizingPressure] = useState(false)
+  const [isResizingFlow, setIsResizingFlow] = useState(false)
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, scale: 1 })
+
   // Draggable popup state
   const [popupPosition, setPopupPosition] = useState({ x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 250 })
   const [isPopupDragging, setIsPopupDragging] = useState(false)
@@ -849,6 +857,60 @@ function App() {
     }
   }, [isPopupDragging, popupDragOffset, popupPosition])
 
+  // Add global mouse event listeners for resize dragging
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (isResizingTrend) {
+        const deltaX = e.clientX - resizeStart.x
+        const deltaY = e.clientY - resizeStart.y
+        const scaleDelta = (deltaX + deltaY) / 400 // Average both directions
+        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
+        setTrendScale(newScale)
+      } else if (isResizingVessel) {
+        const deltaX = e.clientX - resizeStart.x
+        const deltaY = e.clientY - resizeStart.y
+        const scaleDelta = (deltaX + deltaY) / 400
+        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
+        setVesselScale(newScale)
+      } else if (isResizingLevel) {
+        const deltaX = e.clientX - resizeStart.x
+        const deltaY = e.clientY - resizeStart.y
+        const scaleDelta = (deltaX + deltaY) / 400
+        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
+        setLevelScale(newScale)
+      } else if (isResizingPressure) {
+        const deltaX = e.clientX - resizeStart.x
+        const deltaY = e.clientY - resizeStart.y
+        const scaleDelta = (deltaX + deltaY) / 400
+        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
+        setPressureScale(newScale)
+      } else if (isResizingFlow) {
+        const deltaX = e.clientX - resizeStart.x
+        const deltaY = e.clientY - resizeStart.y
+        const scaleDelta = (deltaX + deltaY) / 400
+        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
+        setFlowScale(newScale)
+      }
+    }
+
+    const handleMouseUp = () => {
+      setIsResizingTrend(false)
+      setIsResizingVessel(false)
+      setIsResizingLevel(false)
+      setIsResizingPressure(false)
+      setIsResizingFlow(false)
+    }
+
+    if (isResizingTrend || isResizingVessel || isResizingLevel || isResizingPressure || isResizingFlow) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [isResizingTrend, isResizingVessel, isResizingLevel, isResizingPressure, isResizingFlow, resizeStart])
+
   return (
     <div className="hmi-container">
       {/* Menu Bar */}
@@ -1040,6 +1102,14 @@ function App() {
               VS-4782<br/>
               <span style={{ fontSize: '12px' }}>Production Separator</span>
             </div>
+            <div
+              className="resize-handle"
+              onMouseDown={(e) => {
+                e.stopPropagation()
+                setIsResizingVessel(true)
+                setResizeStart({ x: e.clientX, y: e.clientY, scale: vesselScale })
+              }}
+            />
           </div>
 
           {/* Real-Time Trend Graph */}
@@ -1207,6 +1277,14 @@ function App() {
                 <span style={{ fontSize: '10px' }}>Flow (Effect)</span>
               </div>
             </div>
+            <div
+              className="resize-handle"
+              onMouseDown={(e) => {
+                e.stopPropagation()
+                setIsResizingTrend(true)
+                setResizeStart({ x: e.clientX, y: e.clientY, scale: trendScale })
+              }}
+            />
           </div>
 
           {/* Primary Faceplate - Root Cause (Level) */}
@@ -1326,6 +1404,14 @@ function App() {
               )}
             </div>
               </div>
+              <div
+                className="resize-handle"
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                  setIsResizingLevel(true)
+                  setResizeStart({ x: e.clientX, y: e.clientY, scale: levelScale })
+                }}
+              />
             </div>
           </div>
 
@@ -1438,6 +1524,14 @@ function App() {
                   <span>barg</span>
                 </div>
               </div>
+              <div
+                className="resize-handle"
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                  setIsResizingPressure(true)
+                  setResizeStart({ x: e.clientX, y: e.clientY, scale: pressureScale })
+                }}
+              />
             </div>
           </div>
 
@@ -1550,6 +1644,14 @@ function App() {
                   <span>m³/h</span>
                 </div>
               </div>
+              <div
+                className="resize-handle"
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                  setIsResizingFlow(true)
+                  setResizeStart({ x: e.clientX, y: e.clientY, scale: flowScale })
+                }}
+              />
             </div>
           </div>
 

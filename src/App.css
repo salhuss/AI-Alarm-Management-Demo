@@ -358,7 +358,7 @@ body {
 
 /* Value Display - Sensor Reading Widget */
 .value-display {
-  position: absolute;
+  position: relative;
   background-color: #d0d0d0;
   border: 2px solid #1a1a1a;
   border-radius: 4px;
@@ -919,4 +919,34 @@ body {
 @keyframes pulse-blue {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.85; }
+}
+
+/* Resize Handle */
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, rgba(100, 200, 255, 0.6) 50%);
+  border-bottom-right-radius: 4px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.resize-handle:hover {
+  background: linear-gradient(135deg, transparent 50%, rgba(100, 200, 255, 0.9) 50%);
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(to bottom right, transparent 45%, #fff 45%, #fff 55%, transparent 55%),
+    linear-gradient(to bottom right, transparent 40%, #ccc 40%, #ccc 50%, transparent 50%);
 }
