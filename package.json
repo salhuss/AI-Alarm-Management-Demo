@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "check:ce": "node src/plant/__tests__/ce-matrix.check.mjs",
+    "audit": "./scripts/audit-leaks.sh",
+    "check": "npm run audit && npm run check:ce && npm run build"
   },
   "dependencies": {
     "react": "^19.2.0",

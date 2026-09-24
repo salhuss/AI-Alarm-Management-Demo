@@ -22,3 +22,45 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ---------------------------------------------------------------------------
+# Client / project-confidential plant data — DO NOT PUBLISH
+#
+# This repo is public and deploys to GitHub Pages. Anything naming the real
+# facility, its instrument tags, trip setpoints, SIL ratings, F&G zones or
+# FDS document numbers stays local.
+#
+# The demo runs on synthetic data in src/plant/. Real project data lives in
+# these ignored paths and is loaded locally only.
+# ---------------------------------------------------------------------------
+
+# FDS-derived reference documents
+HMI_Standards.md
+Logic_Matrix.md
+Tag_Registry.csv
+cause-and-effect-matrix.txt
+*cause-effect*
+*cause-and-effect*
+*Tag_Registry*
+*_FDS*
+*FDS_*
+
+# Real plant configuration (synthetic equivalents are committed instead)
+src/plant/**/*.real.js
+src/plant/real/
+plant-data/
+
+# Common confidential-document extensions dropped into the repo
+*.xlsx
+*.xls
+*.docx
+*.doc
+*.pdf
+*.dwg
+
+# Deployment secrets
+.env
+.env.*
+
+# Leak-audit pattern list — contains the real identifiers
+scripts/leak-patterns.local

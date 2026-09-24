@@ -1,0 +1,25 @@
+# Project-confidential strings the leak audit must never find in tracked
+# files. One per line; blank lines and # comments ignored. Matched literally,
+# case-sensitively, as substrings.
+#
+# Copy to scripts/leak-patterns.local (gitignored) and fill in the real
+# values. This example file is committed; the .local one never is.
+#
+# Include: client and site names, facility abbreviations, document number
+# series, real fire & gas zone IDs, and real instrument tag series.
+
+# Client / site / facility names
+ExampleClientName
+ExampleSiteName
+
+# Document number series
+00-00-00
+
+# Facility abbreviation
+XYZ
+
+# Real fire & gas zone IDs
+FZ00_SZ00
+
+# Real instrument tag series (hyphens included so partial numbers don't match)
+-0000-

@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
+import PlantOverview from './PlantOverview.jsx'
 import './App.css'
 
 function App() {
+  // Which screen is showing. The separator screen is kept mounted but hidden
+  // when the overview is up, so its simulation intervals and the positions of
+  // its draggable faceplates survive switching back and forth.
+  const [screen, setScreen] = useState('overview')
+
   // Simulation state
   const [activeScenario, setActiveScenario] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
@@ -9,10 +15,10 @@ function App() {
   const [currentTransmitterType, setCurrentTransmitterType] = useState('level') // 'level', 'pressure', 'flow'
 
   // Tag values
-  const [h2sLevel, setH2sLevel] = useState(2) // XTGD-5401-001
-  const [flowLinePressure, setFlowLinePressure] = useState(52) // PIT-09G-03
-  const [absorberLevel, setAbsorberLevel] = useState(1100) // LIT-3201-05
-  const [degasserPressure, setDegasserPressure] = useState(0.2) // PIT-2401-01
+  const [h2sLevel, setH2sLevel] = useState(2) // XTGD-5000-001 (synthetic)
+  const [flowLinePressure, setFlowLinePressure] = useState(52) // PIT-09A-03 (synthetic)
+  const [absorberLevel, setAbsorberLevel] = useState(1100) // LIT-2201-05
+  const [degasserPressure, setDegasserPressure] = useState(0.2) // PIT-2001-01 (synthetic)
   const [flowRate, setFlowRate] = useState(150) // FIT-4782-C2
   const [sensorHealth, setSensorHealth] = useState(100) // For predictive maintenance
 
@@ -381,15 +387,15 @@ function App() {
           type: 'predictive',
           icon: '🔧',
           title: 'PREDICTIVE MAINTENANCE ALERT',
-          message: 'Sensor Health Degrading: LIT-3201-05',
+          message: 'Sensor Health Degrading: LIT-2201-05',
           subtitle: 'Field Device Manager (FDM) has detected anomalies.',
           details: [
-            { label: 'Tag', value: 'LIT-3201-05 (Amine Absorber Level Transmitter)' },
+            { label: 'Tag', value: 'LIT-2201-05 (Amine Absorber Level Transmitter)' },
             { label: 'Signal Noise Level', value: 'ELEVATED (Above Threshold)' },
             { label: 'Drift Rate', value: `${((time / 10) * 5).toFixed(1)}% per hour (> 2% threshold)` },
             { label: 'Sensor Health', value: `${sensorHealth.toFixed(0)}%` },
             { label: 'Prediction', value: '80% probability of "Bad PV" failure in 24 hours' },
-            { label: 'Recommendation', value: 'Schedule maintenance for LIT-3201-05 before next shift' }
+            { label: 'Recommendation', value: 'Schedule maintenance for LIT-2201-05 before next shift' }
           ]
         })
         setShowPopup(true)
@@ -913,17 +919,38 @@ function App() {
 
   return (
     <div className="hmi-container">
-      {/* Menu Bar */}
+      {/* Menu Bar — the last two buttons switch screens */}
       <div className="menu-bar">
         <button>File</button>
         <button>View</button>
         <button>Trends</button>
         <button>Alarms</button>
         <button>System</button>
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={() => setScreen('overview')}
+          style={{
+            backgroundColor: screen === 'overview' ? '#0a5a9a' : '#3a3a3a',
+            fontWeight: screen === 'overview' ? 'bold' : 'normal',
+          }}
+        >
+          PLANT OVERVIEW
+        </button>
+        <button
+          onClick={() => setScreen('separator')}
+          style={{
+            backgroundColor: screen === 'separator' ? '#0a5a9a' : '#3a3a3a',
+            fontWeight: screen === 'separator' ? 'bold' : 'normal',
+          }}
+        >
+          SEPARATOR DETAIL
+        </button>
       </div>
 
+      {screen === 'overview' && <PlantOverview />}
+
       {/* Main Display Area */}
-      <div className="main-display">
+      <div className="main-display" style={{ display: screen === 'separator' ? undefined : 'none' }}>
         <div className="process-container">
           <h2 className="process-title">Production Separator - AI Alarm Management</h2>
 
@@ -1433,7 +1460,7 @@ function App() {
               }
             }}
           >
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', width: '117px', height: '260px' }}>
               <div
                 className="value-display"
                 style={{
@@ -1526,6 +1553,7 @@ function App() {
               </div>
               <div
                 className="resize-handle"
+                style={{ bottom: 0, right: 0 }}
                 onMouseDown={(e) => {
                   e.stopPropagation()
                   setIsResizingPressure(true)
@@ -1553,7 +1581,7 @@ function App() {
               }
             }}
           >
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', width: '117px', height: '260px' }}>
               <div
                 className="value-display"
                 style={{
@@ -1646,6 +1674,7 @@ function App() {
               </div>
               <div
                 className="resize-handle"
+                style={{ bottom: 0, right: 0 }}
                 onMouseDown={(e) => {
                   e.stopPropagation()
                   setIsResizingFlow(true)
