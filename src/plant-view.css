@@ -546,3 +546,216 @@
   font-size: 9px;
   color: #ffd700;
 }
+
+/* ============================================================ faceplates === */
+/* Fixed position — no drag, no resize. */
+
+.fp {
+  display: flex;
+  flex-direction: column;
+  background-color: #222;
+  border: 2px solid #8a8a8a;
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.fp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 6px;
+  border-bottom: 1px solid #444;
+}
+
+.fp-tag { font: bold 10px 'Courier New', monospace; color: #fff; }
+.fp-sil { font: 7px Arial, sans-serif; color: #ffaa00; border: 1px solid #885500; padding: 0 3px; border-radius: 2px; }
+.fp-service { padding: 3px 6px; font-size: 8px; color: #999; line-height: 1.3; border-bottom: 1px solid #333; }
+
+.fp-reading { display: flex; gap: 6px; padding: 6px; align-items: stretch; }
+
+.fp-value { flex: 1; font: bold 20px 'Courier New', monospace; display: flex; align-items: baseline; gap: 3px; }
+.fp-eng { font: 8px Arial, sans-serif; color: #999; }
+
+.fp-bar-wrap { display: flex; gap: 2px; }
+
+.fp-bar {
+  position: relative;
+  width: 14px;
+  min-height: 52px;
+  background-color: #1a1a1a;
+  border: 1px solid #555;
+}
+
+.fp-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 400ms ease; }
+
+.fp-bar-tick {
+  position: absolute; left: -2px; right: -2px;
+  border-top: 1px solid;
+  pointer-events: none;
+}
+
+.fp-bar-scale {
+  display: flex; flex-direction: column; justify-content: space-between;
+  font: 6px 'Courier New', monospace; color: #777;
+}
+
+.fp-setpoints {
+  display: flex; flex-wrap: wrap; gap: 2px 6px;
+  padding: 4px 6px;
+  border-top: 1px solid #333;
+  font: 8px 'Courier New', monospace; color: #ccc;
+}
+
+.fp-sp { display: inline-flex; gap: 3px; align-items: center; }
+.fp-sp-k { font-weight: bold; font-size: 7px; padding: 0 2px; border-radius: 1px; }
+.fp-sp-k.hh, .fp-sp-k.ll { background: #4a1010; color: #ff5555; }
+.fp-sp-k.h, .fp-sp-k.l { background: #3a3010; color: #ffd700; }
+.fp-sp-k.sp { background: #10304a; color: #66ddff; }
+
+.fp-status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 6px;
+  font: bold 9px Arial, sans-serif;
+  border-top: 1px solid #333;
+}
+
+.fp-priority { font-size: 7px; }
+
+.fp-foot {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 3px 6px;
+  font: 7px 'Courier New', monospace; color: #777;
+  background: #1c1c1c;
+}
+
+.fp-foot-drives { color: #66aaff; }
+.fp-foot-health { color: #ffaa00; }
+
+.fp-overrange {
+  padding: 2px 6px;
+  font-size: 7px; color: #ffaa00;
+  background: rgba(200,160,0,0.12);
+  border-top: 1px solid #553300;
+}
+
+.fp.compact .fp-value { font-size: 15px; }
+.fp.compact .fp-bar { min-height: 38px; }
+
+/* =========================================================== trend graph === */
+
+.trend {
+  display: flex; flex-direction: column;
+  background-color: #1f1f1f;
+  border: 1px solid #444; border-radius: 3px;
+  min-height: 0; overflow: hidden;
+}
+
+.trend-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 4px 8px;
+  background: #2a2a2a; border-bottom: 1px solid #444;
+}
+
+.trend-title { font: bold 9px Arial, sans-serif; color: #e0e0e0; letter-spacing: 0.4px; }
+.trend-scale-note { font: 8px 'Courier New', monospace; color: #888; }
+.trend-plot { flex: 1 1 auto; min-height: 0; padding: 2px; }
+.trend-svg { width: 100%; height: 100%; display: block; }
+.trend-limit-label { font: 7px 'Courier New', monospace; }
+.trend-empty { padding: 20px; text-align: center; font-size: 10px; color: #666; }
+
+.trend-legend {
+  display: flex; flex-wrap: wrap; gap: 3px 12px;
+  padding: 4px 8px; background: #222; border-top: 1px solid #383838;
+}
+
+.trend-legend-item { display: inline-flex; align-items: center; gap: 4px; font: 8px 'Courier New', monospace; color: #bbb; }
+.trend-legend-swatch { width: 10px; height: 2px; display: inline-block; }
+.trend-legend-val { color: #fff; }
+
+/* ====================================================== equipment symbols === */
+
+.eq-tag { font: 7px 'Courier New', monospace; fill: #747c84; }
+.eq-sub { font: 6px Arial, sans-serif; fill: #888; }
+.eq-sub.trip { fill: #ff5555; font-weight: bold; }
+.eq-badge { font: bold 7px Arial, sans-serif; fill: #fff; }
+
+.eq-fan.spinning { animation: eq-spin 1.1s linear infinite; transform-origin: center; }
+@keyframes eq-spin { to { transform: rotate(360deg); } }
+
+.eq-vessel, .eq-column, .eq-pump, .eq-valve, .eq-compressor { cursor: default; }
+
+/* ========================================================== unit detail === */
+
+.unit-detail {
+  display: flex; flex-direction: column; gap: 6px;
+  height: 100%; min-height: 0;
+  padding: 8px 12px; box-sizing: border-box;
+}
+
+.unit-detail-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 8px;
+  background: #2a2a2a; border: 1px solid #444; border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.unit-detail-back {
+  background: #3a3a3a; color: #e0e0e0; border: 1px solid #555;
+  font: bold 9px Arial, sans-serif; padding: 3px 8px; cursor: pointer; border-radius: 2px;
+}
+.unit-detail-back:hover { background: #0a5a9a; border-color: #0088ff; }
+
+.unit-detail-title { font: bold 12px Arial, sans-serif; color: #fff; letter-spacing: 0.4px; }
+.unit-detail-sub { flex: 1; font: 8px 'Courier New', monospace; color: #888; }
+
+.unit-detail-state { font: bold 9px Arial, sans-serif; padding: 2px 7px; border-radius: 2px; }
+.unit-detail-state.normal { background: #1e2a1e; color: #7fbf7f; border: 1px solid #4a7c4a; }
+.unit-detail-state.alarm { background: #2a2614; color: #ffd700; border: 1px solid #c8a000; }
+.unit-detail-state.tripped { background: #2a1414; color: #ff5555; border: 1px solid #cc2222; }
+.unit-detail-state.shutdown { background: #26142a; color: #ff66ff; border: 1px solid #cc00cc; }
+
+.unit-detail-body {
+  display: grid; grid-template-columns: 1fr 300px; gap: 8px;
+  flex: 1 1 60%; min-height: 0;
+}
+
+.unit-graphic {
+  background: #1c1c1c; border: 1px solid #444; border-radius: 3px;
+  padding: 4px; overflow: auto; min-height: 0;
+}
+.unit-graphic-svg { width: 100%; height: 100%; min-height: 220px; display: block; }
+
+.unit-faceplates {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  overflow-y: auto; min-height: 0; align-content: start;
+}
+
+.unit-detail-foot {
+  display: grid; grid-template-columns: 1fr 320px; gap: 8px;
+  flex: 1 1 40%; min-height: 0;
+}
+
+.unit-valves {
+  display: flex; flex-direction: column; gap: 4px;
+  background: #1f1f1f; border: 1px solid #444; border-radius: 3px;
+  padding: 6px; overflow-y: auto; min-height: 0;
+}
+
+.unit-valves-head { font: bold 9px Arial, sans-serif; color: #e0e0e0; letter-spacing: 0.4px; }
+.unit-valves-svg { width: 100%; height: 52px; display: block; }
+
+.unit-control-valves { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.unit-cv {
+  display: flex; gap: 6px; align-items: baseline;
+  padding: 2px 4px; background: #252525; border-left: 2px solid #66ddff;
+  font: 8px 'Courier New', monospace;
+}
+.unit-cv-tag { color: #fff; font-weight: bold; }
+.unit-cv-sp { color: #66ddff; }
+.unit-cv-by { color: #888; }
+
+/* Drilled-in: diagram shrinks to a strip, detail takes the rest */
+.plant-pfd-page.drilled > .pfd { flex: 0 0 30%; min-height: 180px; }
+.plant-pfd-page.drilled > .unit-detail { flex: 1 1 70%; padding: 0; }
+.plant-pfd-page.drilled .pfd-legend { display: none; }
