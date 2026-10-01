@@ -755,7 +755,123 @@
 .unit-cv-sp { color: #66ddff; }
 .unit-cv-by { color: #888; }
 
-/* Drilled-in: diagram shrinks to a strip, detail takes the rest */
-.plant-pfd-page.drilled > .pfd { flex: 0 0 30%; min-height: 180px; }
-.plant-pfd-page.drilled > .unit-detail { flex: 1 1 70%; padding: 0; }
-.plant-pfd-page.drilled .pfd-legend { display: none; }
+
+/* =================================================== unit page (own screen) === */
+
+.unit-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  background-color: #2a2a2a;
+}
+
+.unit-page-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+  background: linear-gradient(to bottom, #333, #262626);
+  border: 1px solid #484848;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.unit-page-back {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  font: bold 10px Arial, sans-serif;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.unit-page-back:hover { background: #0a5a9a; border-color: #0088ff; }
+
+.unit-page-title { font: bold 15px Arial, sans-serif; color: #fff; margin: 0; letter-spacing: 0.4px; }
+.unit-page-sub { font: 10px Arial, sans-serif; color: #999; }
+.unit-page-count { flex: 1; text-align: right; font: 9px 'Courier New', monospace; color: #777; }
+
+.unit-page-state { font: bold 10px Arial, sans-serif; padding: 3px 9px; border-radius: 2px; }
+.unit-page-state.normal { background: #1e2a1e; color: #7fbf7f; border: 1px solid #4a7c4a; }
+.unit-page-state.alarm { background: #2a2614; color: #ffd700; border: 1px solid #c8a000; }
+.unit-page-state.tripped { background: #2a1414; color: #ff5555; border: 1px solid #cc2222; }
+.unit-page-state.shutdown { background: #26142a; color: #ff66ff; border: 1px solid #cc00cc; }
+
+.unit-page-main {
+  display: grid;
+  grid-template-columns: 1fr 272px;
+  gap: 8px;
+  flex: 1 1 64%;
+  min-height: 0;
+}
+
+/* Process canvas — equipment absolutely positioned with pipe runs */
+.unit-canvas-wrap {
+  background:
+    radial-gradient(ellipse at 50% 0%, #333 0%, #262626 70%),
+    #262626;
+  border: 1px solid #484848;
+  border-radius: 3px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.unit-canvas { position: relative; }
+.unit-canvas-item { position: absolute; z-index: 2; }
+
+.unit-page-faceplates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 2px;
+}
+
+.unit-page-panel-head {
+  font: bold 9px Arial, sans-serif;
+  color: #bbb;
+  letter-spacing: 0.5px;
+  padding: 3px 0;
+  border-bottom: 1px solid #444;
+  flex: 0 0 auto;
+}
+.unit-page-panel-head.sub { margin-top: 6px; color: #888; }
+
+.unit-page-foot {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 8px;
+  flex: 1 1 36%;
+  min-height: 0;
+}
+
+.unit-page-elements {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 7px 9px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.unit-valve-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 6px 0;
+}
+
+.unit-page-empty {
+  padding: 12px;
+  text-align: center;
+  font-size: 10px;
+  color: #666;
+}

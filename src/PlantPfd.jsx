@@ -3,7 +3,7 @@ import ProcessFlowDiagram from './components/ProcessFlowDiagram.jsx'
 import AlarmSummary from './components/AlarmSummary.jsx'
 import EsdPanel from './components/EsdPanel.jsx'
 import InsightCard from './components/InsightCard.jsx'
-import UnitDetail from './components/UnitDetail.jsx'
+import UnitPage from './UnitPage.jsx'
 import useCascade from './hooks/useCascade.js'
 import useUnitSimulation from './hooks/useUnitSimulation.js'
 import {
@@ -113,27 +113,18 @@ export default function PlantPfd() {
     return crossed ? { unit: u, tag: inst.tag, ...crossed } : null
   }).filter(Boolean)
 
-  // Drill-down replaces the lower half; the diagram stays visible above it.
+  // Drill-down is its own full page — the PFD is not shown alongside it.
   if (drilledUnit) {
     return (
-      <div className="plant-pfd-page drilled">
-        <ProcessFlowDiagram
-          unitStates={unitStates}
-          unitValues={unitValues}
-          selectedUnit={drilledUnit}
-          onSelectUnit={(u) => setDrilledUnit(u === drilledUnit ? null : u)}
-          compact
-        />
-        <UnitDetail
-          unit={drilledUnit}
-          values={values}
-          trendData={trends}
-          unitState={unitStates[drilledUnit]}
-          valveStates={valveStates}
-          motorStates={motorStates}
-          onBack={() => setDrilledUnit(null)}
-        />
-      </div>
+      <UnitPage
+        unit={drilledUnit}
+        values={values}
+        trendData={trends}
+        unitState={unitStates[drilledUnit]}
+        valveStates={valveStates}
+        motorStates={motorStates}
+        onBack={() => setDrilledUnit(null)}
+      />
     )
   }
 
