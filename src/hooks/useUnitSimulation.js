@@ -19,7 +19,7 @@ import { INSTRUMENTS } from '../plant/index.js'
 const TREND_POINTS = 60
 const TICK_MS = 500
 
-export default function useUnitSimulation({ unitStates = {}, isPaused = false }) {
+export default function useUnitSimulation({ unitStates = {}, isPaused = false, overrides = {} }) {
   const [values, setValues] = useState(() =>
     Object.fromEntries(
       INSTRUMENTS.map((i) => [i.tag, i.envelope?.normal ?? i.setpoint ?? i.range[0]]),
@@ -37,9 +37,11 @@ export default function useUnitSimulation({ unitStates = {}, isPaused = false })
 
   const pausedRef = useRef(isPaused)
   const statesRef = useRef(unitStates)
+  const overridesRef = useRef(overrides)
 
   useEffect(() => { pausedRef.current = isPaused }, [isPaused])
   useEffect(() => { statesRef.current = unitStates })
+  useEffect(() => { overridesRef.current = overrides })
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -52,8 +54,13 @@ export default function useUnitSimulation({ unitStates = {}, isPaused = false })
           const state = statesRef.current[inst.unit]
           const env = inst.envelope
           const current = prev[inst.tag] ?? env?.normal ?? inst.range[0]
+          const override = overridesRef.current[inst.tag]
 
-          if (state === 'tripped' || state === 'shutdown') {
+          if (override != null) {
+            // A unit scenario is driving this tag; record it so the trend
+            // shows the ramp rather than the idle band.
+            next[inst.tag] = override
+          } else if (state === 'tripped' || state === 'shutdown') {
             // Decay at the documented rate, scaled to the tick.
             const step = (env?.rate ?? 1) * (TICK_MS / 1000)
             next[inst.tag] = Math.max(inst.range[0], current - step)

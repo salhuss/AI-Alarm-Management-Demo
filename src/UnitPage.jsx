@@ -3,6 +3,10 @@ import Equipment, { ValveSymbol } from './components/Equipment.jsx'
 import { EQUIPMENT_SIZE } from './components/equipmentSizes.js'
 import Faceplate from './components/Faceplate.jsx'
 import TrendGraph from './components/TrendGraph.jsx'
+import TripPanel from './components/TripPanel.jsx'
+import InsightCard from './components/InsightCard.jsx'
+import AlarmSummary from './components/AlarmSummary.jsx'
+import useUnitTrips from './hooks/useUnitTrips.js'
 import { EQUIPMENT, STREAMS, instrumentsForUnit, finalElementsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
 import { MOTOR_STATE, VALVE_STATE } from './plant/hmiStates.js'
@@ -124,13 +128,21 @@ const pipeRuns = (placed, internal, stopped) => {
 export default function UnitPage({
   unit, values = {}, trendData = {}, unitState = 'normal',
   valveStates = {}, motorStates = {}, onBack,
+  isPaused, onTogglePause, onOverride, onClearOverride,
 }) {
+  const trips = useUnitTrips({ unit, isPaused, onOverride, onClearOverride })
   const layout = useMemo(() => layoutUnit(unit), [unit])
   const instruments = useMemo(() => instrumentsForUnit(unit), [unit])
   const valves = useMemo(() => finalElementsForUnit(unit), [unit])
   const meta = UNIT_LAYOUT[unit]
 
-  const stopped = unitState === 'tripped' || unitState === 'shutdown'
+  // A unit trip run from this page overrides the plant-level state.
+  const localTripped = trips.scenario === 'trip'
+  const effectiveState = localTripped ? 'tripped' : unitState
+  const mergedValves = { ...valveStates, ...trips.valveStates }
+  const mergedMotors = { ...motorStates, ...trips.motorStates }
+
+  const stopped = effectiveState === 'tripped' || effectiveState === 'shutdown'
   const runs = useMemo(
     () => pipeRuns(layout.placed, layout.internal, stopped),
     [layout, stopped],
@@ -150,12 +162,12 @@ export default function UnitPage({
   const sdvs = valves.filter((v) => v.type !== 'control')
   const controlValves = valves.filter((v) => v.type === 'control')
 
-  const valveStateFor = (v) => valveStates[v.tag]
+  const valveStateFor = (v) => mergedValves[v.tag]
     ?? (stopped
       ? (v.type === 'BDV' ? VALVE_STATE.OPEN : VALVE_STATE.CLOSED)
       : (v.normal === 'OPEN' ? VALVE_STATE.OPEN : VALVE_STATE.CLOSED))
 
-  const motorStateFor = (item) => motorStates[item.tag]
+  const motorStateFor = (item) => mergedMotors[item.tag]
     ?? (stopped
       ? MOTOR_STATE.TRIPPED
       : item.duty === 'standby' ? MOTOR_STATE.STOPPED : MOTOR_STATE.RUNNING)
@@ -169,7 +181,7 @@ export default function UnitPage({
         <span className="unit-page-count">
           {layout.placed.length} equipment · {instruments.length} instruments · {valves.length} final elements
         </span>
-        <span className={`unit-page-state ${unitState}`}>{unitState.toUpperCase()}</span>
+        <span className={`unit-page-state ${effectiveState}`}>{effectiveState.toUpperCase()}</span>
       </div>
 
       <div className="unit-page-main">
@@ -199,7 +211,7 @@ export default function UnitPage({
                 <Equipment
                   item={item}
                   value={values[item.tag]}
-                  state={unitState}
+                  state={effectiveState}
                   motorState={motorStateFor(item)}
                   fansRunning={stopped ? 0 : item.fans?.length}
                 />
@@ -210,12 +222,25 @@ export default function UnitPage({
 
         {/* Faceplates, fixed column */}
         <div className="unit-page-faceplates">
+          <TripPanel
+            instruments={ordered}
+            scenario={trips.scenario}
+            subjectTag={trips.subjectTag}
+            floodCount={trips.floodCount}
+            onTrip={trips.runTrip}
+            onPredictive={trips.runPredictive}
+            onNuisance={trips.runNuisance}
+            onReset={trips.reset}
+            isPaused={isPaused}
+            onTogglePause={onTogglePause}
+          />
           <div className="unit-page-panel-head">FACEPLATES</div>
           {ordered.map((inst) => (
             <Faceplate
               key={inst.tag}
               instrument={inst}
               value={values[inst.tag] ?? inst.envelope?.normal ?? inst.setpoint}
+              health={trips.health[inst.tag] ?? 100}
               compact={ordered.length > 5}
             />
           ))}
@@ -228,6 +253,21 @@ export default function UnitPage({
           ? <TrendGraph series={series} focusTag={ordered[0]?.tag} />
           : <div className="unit-page-empty">No trend data</div>}
 
+        {trips.insight ? (
+          <InsightCard
+            insight={trips.insight}
+            onDismiss={() => trips.setInsight(null)}
+            onAction={trips.insight.actionable ? trips.shelveSubject : undefined}
+            actionLabel="SHELVE FOR 2 HOURS"
+          />
+        ) : trips.alarms.length > 0 ? (
+          <AlarmSummary
+            alarms={trips.alarms}
+            onAcknowledge={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)))}
+            onShelve={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, shelved: true } : a)))}
+            aiSuppressing={0}
+          />
+        ) : (
         <div className="unit-page-elements">
           <div className="unit-page-panel-head">FINAL ELEMENTS</div>
           <div className="unit-valve-row">
@@ -250,6 +290,7 @@ export default function UnitPage({
             </>
           )}
         </div>
+        )}
       </div>
     </div>
   )

@@ -56,6 +56,11 @@ export default function PlantPfd() {
   } = useCascade()
 
   const [drilledUnit, setDrilledUnit] = useState(null)
+  // A scenario on a unit page drives values directly, overriding the idle
+  // simulation for that tag until it is reset.
+  const [overrides, setOverrides] = useState({})
+  const setOverride = (tag, value) => setOverrides((prev) => ({ ...prev, [tag]: value }))
+  const clearOverrides = () => setOverrides({})
 
   const headlines = useMemo(
     () => Object.fromEntries(UNIT_KEYS.map((u) => [u, resolveHeadline(u)])),
@@ -81,7 +86,7 @@ export default function PlantPfd() {
     else unitStates[unit] = 'normal'
   }
 
-  const { values, trends, reset: resetSim } = useUnitSimulation({ unitStates, isPaused })
+  const { values, trends, reset: resetSim } = useUnitSimulation({ unitStates, isPaused, overrides })
 
   // Reset the simulation alongside the cascade, so values return to normal.
   const resetAll = () => { reset(); resetSim() }
@@ -117,13 +122,18 @@ export default function PlantPfd() {
   if (drilledUnit) {
     return (
       <UnitPage
+        key={drilledUnit}
         unit={drilledUnit}
-        values={values}
+        values={{ ...values, ...overrides }}
         trendData={trends}
         unitState={unitStates[drilledUnit]}
         valveStates={valveStates}
         motorStates={motorStates}
         onBack={() => setDrilledUnit(null)}
+        isPaused={isPaused}
+        onTogglePause={togglePause}
+        onOverride={setOverride}
+        onClearOverride={clearOverrides}
       />
     )
   }

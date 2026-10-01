@@ -7,7 +7,7 @@
  * flood and the analysis of the flood at the same time for the contrast to
  * land.
  */
-export default function InsightCard({ insight, onDismiss }) {
+export default function InsightCard({ insight, onDismiss, onAction, actionLabel }) {
   if (!insight) return null
 
   return (
@@ -29,6 +29,13 @@ export default function InsightCard({ insight, onDismiss }) {
           </div>
         ))}
       </div>
+
+      {onAction && (
+        <div className="insight-card-actions">
+          <button className="insight-card-act" onClick={onAction}>{actionLabel}</button>
+          <button className="insight-card-act secondary" onClick={onDismiss}>IGNORE</button>
+        </div>
+      )}
     </div>
   )
 }
