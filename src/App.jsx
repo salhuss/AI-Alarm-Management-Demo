@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import PlantOverview from './PlantOverview.jsx'
+import PlantPfd from './PlantPfd.jsx'
 import './App.css'
 
 function App() {
   // Which screen is showing. The separator screen is kept mounted but hidden
   // when the overview is up, so its simulation intervals and the positions of
   // its draggable faceplates survive switching back and forth.
-  const [screen, setScreen] = useState('overview')
+  const [screen, setScreen] = useState('pfd')
 
   // Simulation state
   const [activeScenario, setActiveScenario] = useState(null)
@@ -928,6 +929,15 @@ function App() {
         <button>System</button>
         <div style={{ flex: 1 }} />
         <button
+          onClick={() => setScreen('pfd')}
+          style={{
+            backgroundColor: screen === 'pfd' ? '#0a5a9a' : '#3a3a3a',
+            fontWeight: screen === 'pfd' ? 'bold' : 'normal',
+          }}
+        >
+          PROCESS FLOW
+        </button>
+        <button
           onClick={() => setScreen('overview')}
           style={{
             backgroundColor: screen === 'overview' ? '#0a5a9a' : '#3a3a3a',
@@ -947,6 +957,7 @@ function App() {
         </button>
       </div>
 
+      {screen === 'pfd' && <PlantPfd />}
       {screen === 'overview' && <PlantOverview />}
 
       {/* Main Display Area */}

@@ -1,0 +1,201 @@
+/**
+ * Process topology — equipment and stream connections per stage.
+ *
+ * SYNTHETIC DATA. Representative of a sour gas processing facility but not
+ * any real plant's. Real project values load from the gitignored overlay at
+ * src/plant/real/topology.real.js when present — see ./index.js.
+ *
+ * `EQUIPMENT` gives the PFD's nodes, `STREAMS` its edges. Recycle legs are
+ * flagged so circulation loops can be drawn as return paths and collapsed
+ * to an indicator on the landing page.
+ */
+
+export const EQUIPMENT_TYPE = {
+  WELL: 'well',
+  VESSEL: 'vessel',
+  COLUMN: 'column',
+  EXCHANGER: 'exchanger',
+  AIR_COOLER: 'airCooler',
+  FIRED_HEATER: 'firedHeater',
+  PUMP: 'pump',
+  COMPRESSOR: 'compressor',
+  FILTER: 'filter',
+  TANK: 'tank',
+  PIG: 'pig',
+  METER: 'meter',
+  FLARE: 'flare',
+}
+
+const T = EQUIPMENT_TYPE
+
+export const EQUIPMENT = {
+  wellpads: [
+    { tag: 'GW-01', name: 'Well GW-01', type: T.WELL, pad: 'WP-01', flow: [0, 22], flowUnit: 'MMSCFD' },
+    { tag: 'GW-02', name: 'Well GW-02', type: T.WELL, pad: 'WP-02', flow: [0, 22], flowUnit: 'MMSCFD' },
+    { tag: 'GW-03', name: 'Well GW-03', type: T.WELL, pad: 'WP-03', flow: [0, 22], flowUnit: 'MMSCFD' },
+    { tag: 'V-6001-01', name: 'Wellpad Flare KO Drum', type: T.VESSEL, level: [0, 1810], levelUnit: 'mm' },
+    { tag: 'LP-3901-02', name: 'Mobile Pig Launcher (WP-02)', type: T.PIG },
+  ],
+
+  separator: [
+    { tag: 'LP-3901-03', name: 'Mobile Pig Receiver', type: T.PIG },
+    {
+      tag: 'V-1001-01', name: 'Production Separator', type: T.VESSEL,
+      detail: '3-Phase Horizontal', primary: true,
+      level: [0, 1300], levelUnit: 'mm', press: [0, 65], pressUnit: 'barg',
+      throughput: '0-30 MMSCFD gas, 0-7000 BWPD water',
+    },
+    { tag: 'E-1001-01', name: 'Feed Gas Air Cooler', type: T.AIR_COOLER, fans: ['FM-1001-01A', 'FM-1001-01B'], temp: [0, 120], tempUnit: 'degC' },
+    { tag: 'E-1001-02', name: 'Produced Water Air Cooler', type: T.AIR_COOLER, fans: ['FM-1001-02A', 'FM-1001-02B'] },
+  ],
+
+  amine: [
+    { tag: 'S-2201-01', name: 'Amine Inlet Filter Separator', type: T.FILTER, detail: 'Filter / Coalescer' },
+    {
+      tag: 'C-2201-01', name: 'Amine Absorber / Contactor', type: T.COLUMN,
+      detail: 'Trayed / Packed', primary: true,
+      level: [0, 1700], levelUnit: 'mm',
+    },
+    { tag: 'V-2201-01', name: 'Fuel Gas Scrubber', type: T.VESSEL, level: [0, 550], levelUnit: 'mm', press: [0, 10], pressUnit: 'barg' },
+    { tag: 'H-2201-01', name: 'Fuel Gas Heater', type: T.FIRED_HEATER, temp: [0, 220], tempUnit: 'degC' },
+    { tag: 'V-2201-02', name: 'Rich Amine Flash Drum', type: T.VESSEL, detail: 'Horizontal', level: [0, 1200], levelUnit: 'mm', press: [0, 10], pressUnit: 'barg' },
+    { tag: 'C-2201-02', name: 'Amine Regenerator Column', type: T.COLUMN },
+    { tag: 'E-2201-03', name: 'Amine Reboiler', type: T.EXCHANGER, detail: 'Fired / Steam', temp: [50, 160], tempUnit: 'degC', level: [0, 600], levelUnit: 'mm' },
+    { tag: 'E-2201-04', name: 'Amine Regenerator Condenser', type: T.EXCHANGER },
+    { tag: 'V-2201-03', name: 'Amine Reflux Drum', type: T.VESSEL, level: [0, 700], levelUnit: 'mm' },
+    { tag: 'P-2201-02A', name: 'Amine Reflux Pump A', type: T.PUMP, duty: 'duty', pair: 'P-2201-02B', flow: [0, 3], flowUnit: 'm3/hr' },
+    { tag: 'P-2201-02B', name: 'Amine Reflux Pump B', type: T.PUMP, duty: 'standby', pair: 'P-2201-02A', flow: [0, 3], flowUnit: 'm3/hr' },
+    { tag: 'V-2201-04', name: 'Lean Amine Surge Vessel', type: T.VESSEL, level: [0, 1050], levelUnit: 'mm' },
+    { tag: 'P-2201-03A', name: 'Amine Booster Pump A', type: T.PUMP, duty: 'duty', pair: 'P-2201-03B', flow: [0, 7], flowUnit: 'm3/hr' },
+    { tag: 'P-2201-03B', name: 'Amine Booster Pump B', type: T.PUMP, duty: 'standby', pair: 'P-2201-03A', flow: [0, 7], flowUnit: 'm3/hr' },
+    { tag: 'E-2201-01', name: 'Lean Amine Air Cooler', type: T.AIR_COOLER },
+    { tag: 'S-2201-02', name: 'Lean Amine Pre-Filter', type: T.FILTER },
+    { tag: 'S-2201-03', name: 'Lean Amine Carbon Filter', type: T.FILTER },
+    { tag: 'S-2201-04', name: 'Lean Amine Cartridge Filter', type: T.FILTER },
+    { tag: 'P-2201-01A', name: 'Amine Circulation Pump A', type: T.PUMP, duty: 'duty', pair: 'P-2201-01B', flow: [0, 6], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
+    { tag: 'P-2201-01B', name: 'Amine Circulation Pump B', type: T.PUMP, duty: 'standby', pair: 'P-2201-01A', flow: [0, 6], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
+  ],
+
+  dehydration: [
+    {
+      tag: 'C-1101-01', name: 'Glycol Contactor', type: T.COLUMN,
+      detail: 'Column with integral inlet scrubber', primary: true,
+      level: [0, 800], levelUnit: 'mm',
+    },
+    { tag: 'E-1101-01', name: 'Gas/Glycol Exchanger', type: T.EXCHANGER },
+    { tag: 'V-1101-02', name: 'TEG Flash Drum', type: T.VESSEL, level: [0, 1100], levelUnit: 'mm', press: [0, 10], pressUnit: 'barg' },
+    { tag: 'E-1101-04', name: 'Glycol Reboiler', type: T.EXCHANGER, level: [0, 650], levelUnit: 'mm', temp: [160, 250], tempUnit: 'degC' },
+    { tag: 'E-1101-02', name: 'Glycol Reflux Condenser', type: T.EXCHANGER },
+    { tag: 'H-1101-01', name: 'Electric Glycol Heater', type: T.FIRED_HEATER, temp: [0, 290], tempUnit: 'degC', detail: 'skin temperature' },
+    { tag: 'V-1101-03', name: 'TEG Surge Vessel', type: T.VESSEL, level: [0, 550], levelUnit: 'mm' },
+    { tag: 'P-1101-01A', name: 'Lean TEG Circulation Pump A', type: T.PUMP, duty: 'duty', pair: 'P-1101-01B', flow: [0, 3.3], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
+    { tag: 'P-1101-01B', name: 'Lean TEG Circulation Pump B', type: T.PUMP, duty: 'standby', pair: 'P-1101-01A', flow: [0, 3.3], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
+  ],
+
+  salesGas: [
+    {
+      tag: 'U-3001-01', name: 'Export Gas Compressor Package', type: T.COMPRESSOR,
+      detail: 'Reciprocating / Screw', primary: true,
+      press: [0, 200], pressUnit: 'barg',
+    },
+    { tag: 'U-3001-02', name: 'Export Gas Metering Package', type: T.METER, detail: 'Custody transfer skid' },
+    { tag: 'EXPORT-PIPELINE', name: 'Export Pipeline', type: T.FLARE, detail: '6" gas export' },
+  ],
+
+  producedWater: [
+    { tag: 'V-2001-01', name: 'Produced Water Degasser', type: T.VESSEL, primary: true, level: [0, 1450], levelUnit: 'mm', press: [0, 1], pressUnit: 'barg' },
+    { tag: 'PM-2001-01A', name: 'PW Booster Pump A', type: T.PUMP, duty: 'duty', pair: 'PM-2001-01B', flow: [0, 43.72], flowUnit: 'm3/hr' },
+    { tag: 'PM-2001-01B', name: 'PW Booster Pump B', type: T.PUMP, duty: 'standby', pair: 'PM-2001-01A', flow: [0, 43.72], flowUnit: 'm3/hr' },
+    { tag: 'S-2001-01A', name: 'PW Filter A', type: T.FILTER, detail: 'Coalescing / media' },
+    { tag: 'S-2001-01B', name: 'PW Filter B', type: T.FILTER, detail: 'Coalescing / media' },
+    { tag: 'PM-2001-02A', name: 'PW Injection Pump A', type: T.PUMP, duty: 'duty', pair: 'PM-2001-02B', press: [0, 200], pressUnit: 'barg' },
+    { tag: 'PM-2001-02B', name: 'PW Injection Pump B', type: T.PUMP, duty: 'standby', pair: 'PM-2001-02A', press: [0, 200], pressUnit: 'barg' },
+    { tag: 'DW-01', name: 'Disposal Well DW-01 (WP-03)', type: T.WELL, press: [0, 101], pressUnit: 'barg' },
+  ],
+}
+
+export const PHASE = {
+  SOUR_GAS: 'sourGas',
+  SWEET_GAS: 'sweetGas',
+  DRY_GAS: 'dryGas',
+  FUEL_GAS: 'fuelGas',
+  STRIPPING_GAS: 'strippingGas',
+  FLASH_GAS: 'flashGas',
+  RICH_AMINE: 'richAmine',
+  LEAN_AMINE: 'leanAmine',
+  RICH_TEG: 'richTeg',
+  LEAN_TEG: 'leanTeg',
+  PRODUCED_WATER: 'producedWater',
+  CONDENSATE: 'condensate',
+  FLARE: 'flare',
+}
+
+export const STREAMS = [
+  { from: 'GW-01', to: 'LP-3901-03', phase: PHASE.SOUR_GAS, label: 'Raw sour gas WP-01' },
+  { from: 'GW-02', to: 'LP-3901-03', phase: PHASE.SOUR_GAS, label: 'Raw sour gas WP-02', via: 'SDV-1001-04' },
+  { from: 'GW-03', to: 'LP-3901-03', phase: PHASE.SOUR_GAS, label: 'Raw sour gas WP-03', via: 'SDV-1001-05' },
+  { from: 'LP-3901-03', to: 'V-1001-01', phase: PHASE.SOUR_GAS, label: 'Sour gas to separator', via: 'SDV-1001-01' },
+
+  { from: 'V-1001-01', to: 'E-1001-01', phase: PHASE.SOUR_GAS, label: 'Sour gas overhead', via: 'SDV-1001-03' },
+  { from: 'V-1001-01', to: 'E-1001-02', phase: PHASE.PRODUCED_WATER, label: 'Water boot outlet', via: 'SDV-1001-02' },
+  { from: 'V-1001-01', to: 'FLARE-HP', phase: PHASE.FLARE, label: 'Blowdown', via: 'BDV-1001-01' },
+
+  { from: 'E-1001-01', to: 'S-2201-01', phase: PHASE.SOUR_GAS, label: 'Cooled sour gas' },
+  { from: 'S-2201-01', to: 'C-2201-01', phase: PHASE.SOUR_GAS, label: 'Filtered sour gas to absorber bottom' },
+  { from: 'C-2201-01', to: 'V-2201-01', phase: PHASE.SWEET_GAS, label: 'Sweet gas overhead' },
+  { from: 'V-2201-01', to: 'C-1101-01', phase: PHASE.SWEET_GAS, label: 'Sweet gas to dehydration', via: 'SDV-1101-02' },
+  { from: 'C-1101-01', to: 'E-1101-01', phase: PHASE.DRY_GAS, label: 'Dry gas overhead' },
+  { from: 'E-1101-01', to: 'U-3001-01', phase: PHASE.DRY_GAS, label: 'Dry gas to compression' },
+  { from: 'U-3001-01', to: 'U-3001-02', phase: PHASE.DRY_GAS, label: 'Compressed export gas' },
+  { from: 'U-3001-02', to: 'EXPORT-PIPELINE', phase: PHASE.DRY_GAS, label: 'Sales gas to pipeline', via: 'SDV-3001-01' },
+
+  { from: 'V-2201-01', to: 'H-2201-01', phase: PHASE.FUEL_GAS, label: 'Fuel gas takeoff' },
+  { from: 'H-2201-01', to: 'FUEL-GAS-HEADER', phase: PHASE.FUEL_GAS, label: 'Heated fuel gas to header' },
+  { from: 'FUEL-GAS-HEADER', to: 'U-3001-01', phase: PHASE.FUEL_GAS, label: 'Fuel gas to compressor', utility: true },
+  { from: 'C-1101-01', to: 'E-1101-04', phase: PHASE.STRIPPING_GAS, label: 'Stripping gas to reboiler', via: 'SDV-1101-03' },
+
+  { from: 'C-2201-01', to: 'V-2201-02', phase: PHASE.RICH_AMINE, label: 'Rich amine from absorber bottom', via: 'LCV-2201-05' },
+  { from: 'V-2201-02', to: 'U-3801-01', phase: PHASE.FLASH_GAS, label: 'Flash gas to VRU' },
+  { from: 'V-2201-02', to: 'C-2201-02', phase: PHASE.RICH_AMINE, label: 'Rich amine to regenerator' },
+  { from: 'C-2201-02', to: 'E-2201-03', phase: PHASE.RICH_AMINE, label: 'Regenerator bottoms to reboiler' },
+  { from: 'C-2201-02', to: 'E-2201-04', phase: PHASE.FLASH_GAS, label: 'Regenerator overhead' },
+  { from: 'E-2201-04', to: 'V-2201-03', phase: PHASE.CONDENSATE, label: 'Condensed reflux' },
+  { from: 'V-2201-03', to: 'P-2201-02A', phase: PHASE.CONDENSATE, label: 'Reflux to pumps' },
+  { from: 'P-2201-02A', to: 'C-2201-02', phase: PHASE.CONDENSATE, label: 'Reflux return to column top', recycle: true },
+  { from: 'E-2201-03', to: 'V-2201-04', phase: PHASE.LEAN_AMINE, label: 'Lean amine to surge vessel' },
+  { from: 'V-2201-04', to: 'P-2201-03A', phase: PHASE.LEAN_AMINE, label: 'Lean amine to booster pumps' },
+  { from: 'P-2201-03A', to: 'E-2201-01', phase: PHASE.LEAN_AMINE, label: 'Boosted lean amine to cooler' },
+  { from: 'E-2201-01', to: 'S-2201-02', phase: PHASE.LEAN_AMINE, label: 'Cooled lean amine to filters' },
+  { from: 'S-2201-02', to: 'S-2201-03', phase: PHASE.LEAN_AMINE, label: 'Pre-filter to carbon filter' },
+  { from: 'S-2201-03', to: 'S-2201-04', phase: PHASE.LEAN_AMINE, label: 'Carbon to cartridge filter' },
+  { from: 'S-2201-04', to: 'P-2201-01A', phase: PHASE.LEAN_AMINE, label: 'Filtered lean amine to circulation pumps' },
+  { from: 'P-2201-01A', to: 'C-2201-01', phase: PHASE.LEAN_AMINE, label: 'Lean amine to absorber top', recycle: true },
+
+  { from: 'C-1101-01', to: 'V-1101-02', phase: PHASE.RICH_TEG, label: 'Rich TEG from contactor bottom', via: 'SDV-1101-01' },
+  { from: 'V-1101-02', to: 'E-1101-04', phase: PHASE.RICH_TEG, label: 'Rich TEG to reboiler', via: 'SDV-1101-06' },
+  { from: 'E-1101-04', to: 'E-1101-02', phase: PHASE.FLASH_GAS, label: 'Water vapour to reflux condenser' },
+  { from: 'E-1101-02', to: 'U-3801-01', phase: PHASE.FLASH_GAS, label: 'Vent to VRU' },
+  { from: 'H-1101-01', to: 'E-1101-04', phase: PHASE.LEAN_TEG, label: 'Heater duty', utility: true },
+  { from: 'E-1101-04', to: 'V-1101-03', phase: PHASE.LEAN_TEG, label: 'Regenerated lean TEG to surge' },
+  { from: 'V-1101-03', to: 'P-1101-01A', phase: PHASE.LEAN_TEG, label: 'Lean TEG to circulation pumps' },
+  { from: 'P-1101-01A', to: 'E-1101-01', phase: PHASE.LEAN_TEG, label: 'Lean TEG to gas/glycol exchanger' },
+  { from: 'E-1101-01', to: 'C-1101-01', phase: PHASE.LEAN_TEG, label: 'Lean TEG to contactor top', recycle: true },
+  { from: 'E-1101-01', to: 'FLARE-HP', phase: PHASE.FLARE, label: 'Dehydration blowdown', via: 'BDV-1101-05' },
+
+  { from: 'E-1001-02', to: 'V-2001-01', phase: PHASE.PRODUCED_WATER, label: 'Cooled produced water to degasser' },
+  { from: 'V-2001-01', to: 'FLARE-LP', phase: PHASE.FLARE, label: 'Degasser off-gas to LP flare' },
+  { from: 'V-2001-01', to: 'PM-2001-01A', phase: PHASE.PRODUCED_WATER, label: 'Degassed water to booster pumps', via: 'LCV-2001-01' },
+  { from: 'PM-2001-01A', to: 'S-2001-01A', phase: PHASE.PRODUCED_WATER, label: 'Boosted water to filters' },
+  { from: 'S-2001-01A', to: 'PM-2001-02A', phase: PHASE.PRODUCED_WATER, label: 'Filtered water to injection pumps' },
+  { from: 'PM-2001-02A', to: 'DW-01', phase: PHASE.PRODUCED_WATER, label: 'Injection to disposal well', via: 'SDV-2001-01' },
+
+  { from: 'U-3001-01', to: 'FLARE-HP', phase: PHASE.FLARE, label: 'Compressor blowdown', via: 'BDV-3001-02' },
+]
+
+export const BOUNDARY_NODES = {
+  'FLARE-HP': { name: 'HP Flare Header', detail: 'to HP flare KO drum and flare package' },
+  'FLARE-LP': { name: 'LP Flare Header', detail: 'to LP flare KO drum and flare package' },
+  'FUEL-GAS-HEADER': { name: 'Fuel Gas Header', detail: 'power generation, compression, TEG stripping gas' },
+  'U-3801-01': { name: 'Vapour Recovery Unit', detail: 'flash gas and regenerator vents' },
+  'EXPORT-PIPELINE': { name: 'Export Pipeline', detail: '6" to export station' },
+}

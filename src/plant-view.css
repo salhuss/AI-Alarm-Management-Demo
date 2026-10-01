@@ -434,3 +434,115 @@
   border-color: #ff66ff;
   color: #fff;
 }
+
+/* ====================================================== process flow diagram === */
+
+.pfd {
+  display: flex;
+  flex-direction: column;
+  background-color: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 3px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pfd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 10px;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+  flex: 0 0 auto;
+}
+
+.pfd-title { font-size: 11px; font-weight: bold; color: #e0e0e0; letter-spacing: 0.6px; }
+.pfd-hint { font-size: 9px; color: #888; }
+
+.pfd-canvas { flex: 1 1 auto; min-height: 0; padding: 4px; }
+
+.pfd-svg { width: 100%; height: 100%; display: block; }
+
+/* Unit blocks */
+.pfd-unit rect { transition: stroke-width 120ms ease; }
+.pfd-unit:hover rect:first-of-type { stroke-width: 3; }
+
+.pfd-unit-label { font: bold 10px Arial, sans-serif; fill: #e8e8e8; letter-spacing: 0.3px; }
+.pfd-unit-sublabel { font: 8px Arial, sans-serif; fill: #8a8a8a; }
+.pfd-unit-tag { font: 9px 'Courier New', monospace; fill: #747c84; }
+.pfd-unit-value { font: bold 17px 'Courier New', monospace; fill: #fff; }
+.pfd-unit-unit { font: 8px Arial, sans-serif; fill: #999; }
+.pfd-unit-state { font: bold 8px Arial, sans-serif; }
+.pfd-unit-count { font: 8px 'Courier New', monospace; fill: #666; }
+.pfd-loop-badge { font: 7px Arial, sans-serif; fill: #b89ad8; }
+.pfd-boundary { font: 8px Arial, sans-serif; fill: #999; }
+
+/* Streams: dash offset animates to suggest flow direction */
+.pfd-stream { animation: pfd-flow 1.4s linear infinite; }
+.pfd-stream.stopped { animation: none; }
+
+@keyframes pfd-flow {
+  to { stroke-dashoffset: -14; }
+}
+
+/* A solid line has no dasharray to animate, so only dashed ones move. */
+.pfd-stream:not([stroke-dasharray]) { animation: none; }
+
+.pfd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 6px 10px;
+  background-color: #222;
+  border-top: 1px solid #383838;
+  flex: 0 0 auto;
+}
+
+.pfd-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 8px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.pfd-legend-item.loop { color: #b89ad8; }
+
+/* ------------------------------------------------- PFD landing page layout --- */
+
+.plant-pfd-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Diagram takes the upper half, controls the lower */
+.plant-pfd-page > .pfd { flex: 1 1 52%; min-height: 240px; }
+
+.plant-pfd-body {
+  display: grid;
+  grid-template-columns: 250px 1fr 1fr;
+  gap: 8px;
+  flex: 1 1 48%;
+  min-height: 0;
+}
+
+.insight-card.idle { border-color: #444; box-shadow: none; background: #1f1f1f; }
+.insight-card.idle .insight-card-head { background-color: #2a2a2a; }
+.insight-card-idle-body { padding: 12px; font-size: 10px; color: #888; line-height: 1.6; overflow-y: auto; }
+
+.insight-card-deviations {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(200,160,0,0.1);
+  border-left: 2px solid #c8a000;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: #ffd700;
+}
