@@ -36,17 +36,8 @@ function App() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   // Draggable faceplate positions (three independent faceplates)
-  const [levelFaceplatePosition, setLevelFaceplatePosition] = useState({ x: 850, y: 150 })
-  const [pressureFaceplatePosition, setPressureFaceplatePosition] = useState({ x: 850, y: 520 })
-  const [flowFaceplatePosition, setFlowFaceplatePosition] = useState({ x: 850, y: 760 })
 
-  const [isLevelDragging, setIsLevelDragging] = useState(false)
-  const [isPressureDragging, setIsPressureDragging] = useState(false)
-  const [isFlowDragging, setIsFlowDragging] = useState(false)
 
-  const [levelDragOffset, setLevelDragOffset] = useState({ x: 0, y: 0 })
-  const [pressureDragOffset, setPressureDragOffset] = useState({ x: 0, y: 0 })
-  const [flowDragOffset, setFlowDragOffset] = useState({ x: 0, y: 0 })
 
   // Multi-parameter trend data (for cause-effect visualization)
   const [pressureTrendData, setPressureTrendData] = useState(Array(60).fill(52))
@@ -59,17 +50,11 @@ function App() {
 
   // Resize states
   const [trendScale, setTrendScale] = useState(1)
-  const [levelScale, setLevelScale] = useState(1)
-  const [pressureScale, setPressureScale] = useState(1)
-  const [flowScale, setFlowScale] = useState(1)
   const [vesselScale, setVesselScale] = useState(1)
 
   // Resize drag states
   const [isResizingTrend, setIsResizingTrend] = useState(false)
   const [isResizingVessel, setIsResizingVessel] = useState(false)
-  const [isResizingLevel, setIsResizingLevel] = useState(false)
-  const [isResizingPressure, setIsResizingPressure] = useState(false)
-  const [isResizingFlow, setIsResizingFlow] = useState(false)
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, scale: 1 })
 
   // Draggable popup state
@@ -665,33 +650,6 @@ function App() {
     })
   }
 
-  // Drag handlers for level faceplate
-  const handleLevelMouseDown = (e) => {
-    setIsLevelDragging(true)
-    setLevelDragOffset({
-      x: e.clientX - levelFaceplatePosition.x,
-      y: e.clientY - levelFaceplatePosition.y
-    })
-  }
-
-  // Drag handlers for pressure faceplate
-  const handlePressureMouseDown = (e) => {
-    setIsPressureDragging(true)
-    setPressureDragOffset({
-      x: e.clientX - pressureFaceplatePosition.x,
-      y: e.clientY - pressureFaceplatePosition.y
-    })
-  }
-
-  // Drag handlers for flow faceplate
-  const handleFlowMouseDown = (e) => {
-    setIsFlowDragging(true)
-    setFlowDragOffset({
-      x: e.clientX - flowFaceplatePosition.x,
-      y: e.clientY - flowFaceplatePosition.y
-    })
-  }
-
   // Drag handlers for vessel
   const handleVesselMouseDown = (e) => {
     setIsVesselDragging(true)
@@ -738,81 +696,6 @@ function App() {
       }
     }
   }, [isDragging, dragOffset, trendPosition])
-
-  // Add global mouse event listeners for level faceplate dragging
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isLevelDragging) {
-        setLevelFaceplatePosition({
-          x: e.clientX - levelDragOffset.x,
-          y: e.clientY - levelDragOffset.y
-        })
-      }
-    }
-
-    const handleMouseUp = () => {
-      setIsLevelDragging(false)
-    }
-
-    if (isLevelDragging) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-      }
-    }
-  }, [isLevelDragging, levelDragOffset])
-
-  // Add global mouse event listeners for pressure faceplate dragging
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isPressureDragging) {
-        setPressureFaceplatePosition({
-          x: e.clientX - pressureDragOffset.x,
-          y: e.clientY - pressureDragOffset.y
-        })
-      }
-    }
-
-    const handleMouseUp = () => {
-      setIsPressureDragging(false)
-    }
-
-    if (isPressureDragging) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-      }
-    }
-  }, [isPressureDragging, pressureDragOffset])
-
-  // Add global mouse event listeners for flow faceplate dragging
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isFlowDragging) {
-        setFlowFaceplatePosition({
-          x: e.clientX - flowDragOffset.x,
-          y: e.clientY - flowDragOffset.y
-        })
-      }
-    }
-
-    const handleMouseUp = () => {
-      setIsFlowDragging(false)
-    }
-
-    if (isFlowDragging) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-      }
-    }
-  }, [isFlowDragging, flowDragOffset])
 
   // Add global mouse event listeners for vessel dragging
   useEffect(() => {
@@ -879,36 +762,15 @@ function App() {
         const scaleDelta = (deltaX + deltaY) / 400
         const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
         setVesselScale(newScale)
-      } else if (isResizingLevel) {
-        const deltaX = e.clientX - resizeStart.x
-        const deltaY = e.clientY - resizeStart.y
-        const scaleDelta = (deltaX + deltaY) / 400
-        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
-        setLevelScale(newScale)
-      } else if (isResizingPressure) {
-        const deltaX = e.clientX - resizeStart.x
-        const deltaY = e.clientY - resizeStart.y
-        const scaleDelta = (deltaX + deltaY) / 400
-        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
-        setPressureScale(newScale)
-      } else if (isResizingFlow) {
-        const deltaX = e.clientX - resizeStart.x
-        const deltaY = e.clientY - resizeStart.y
-        const scaleDelta = (deltaX + deltaY) / 400
-        const newScale = Math.min(Math.max(resizeStart.scale + scaleDelta, 0.5), 2)
-        setFlowScale(newScale)
       }
     }
 
     const handleMouseUp = () => {
       setIsResizingTrend(false)
       setIsResizingVessel(false)
-      setIsResizingLevel(false)
-      setIsResizingPressure(false)
-      setIsResizingFlow(false)
     }
 
-    if (isResizingTrend || isResizingVessel || isResizingLevel || isResizingPressure || isResizingFlow) {
+    if (isResizingTrend || isResizingVessel) {
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
       return () => {
@@ -916,7 +778,7 @@ function App() {
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
-  }, [isResizingTrend, isResizingVessel, isResizingLevel, isResizingPressure, isResizingFlow, resizeStart])
+  }, [isResizingTrend, isResizingVessel, resizeStart])
 
   return (
     <div className="hmi-container">
@@ -1338,25 +1200,18 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              left: `${levelFaceplatePosition.x}px`,
-              top: `${levelFaceplatePosition.y}px`,
-              cursor: isLevelDragging ? 'grabbing' : 'grab',
-              transform: `scale(${levelScale})`,
-              transformOrigin: 'top left'
-            }}
-            onMouseDown={handleLevelMouseDown}
-            onWheel={(e) => {
-              if (e.ctrlKey || e.metaKey) {
-                e.preventDefault()
-                setLevelScale(prev => Math.min(Math.max(prev + (e.deltaY > 0 ? -0.1 : 0.1), 0.5), 2))
-              }
+              right: '24px',
+              top: '150px',
+              transform: 'scale(0.85)',
+              transformOrigin: 'top right',
+              zIndex: 20
             }}
           >
             <div style={{ position: 'relative' }}>
               <div
                 className="value-display"
                 style={{
-                  border: '5px solid #ff0000',
+                  border: '3px solid #ff0000',
                   boxShadow: '0 0 25px rgba(255, 0, 0, 0.9), inset 0 0 10px rgba(255, 0, 0, 0.3)'
                 }}
               >
@@ -1451,14 +1306,6 @@ function App() {
               )}
             </div>
               </div>
-              <div
-                className="resize-handle"
-                onMouseDown={(e) => {
-                  e.stopPropagation()
-                  setIsResizingLevel(true)
-                  setResizeStart({ x: e.clientX, y: e.clientY, scale: levelScale })
-                }}
-              />
             </div>
           </div>
 
@@ -1466,27 +1313,18 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              left: `${pressureFaceplatePosition.x}px`,
-              top: `${pressureFaceplatePosition.y}px`,
-              cursor: isPressureDragging ? 'grabbing' : 'grab',
-              transform: `scale(${pressureScale})`,
-              transformOrigin: 'top left'
-            }}
-            onMouseDown={handlePressureMouseDown}
-            onWheel={(e) => {
-              if (e.ctrlKey || e.metaKey) {
-                e.preventDefault()
-                setPressureScale(prev => Math.min(Math.max(prev + (e.deltaY > 0 ? -0.1 : 0.1), 0.5), 2))
-              }
+              right: '24px',
+              top: '409px',
+              transform: 'scale(0.85)',
+              transformOrigin: 'top right',
+              zIndex: 20
             }}
           >
-            <div style={{ position: 'relative', width: '117px', height: '260px' }}>
+            <div style={{ position: 'relative' }}>
               <div
                 className="value-display"
                 style={{
-                  transform: 'scale(0.65)',
-                  transformOrigin: 'top left',
-                  border: '5px solid #ffaa00',
+                  border: '3px solid #ffaa00',
                   boxShadow: '0 0 25px rgba(255, 170, 0, 0.9), inset 0 0 10px rgba(255, 170, 0, 0.3)'
                 }}
               >
@@ -1571,15 +1409,6 @@ function App() {
                   <span>barg</span>
                 </div>
               </div>
-              <div
-                className="resize-handle"
-                style={{ bottom: 0, right: 0 }}
-                onMouseDown={(e) => {
-                  e.stopPropagation()
-                  setIsResizingPressure(true)
-                  setResizeStart({ x: e.clientX, y: e.clientY, scale: pressureScale })
-                }}
-              />
             </div>
           </div>
 
@@ -1587,27 +1416,18 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              left: `${flowFaceplatePosition.x}px`,
-              top: `${flowFaceplatePosition.y}px`,
-              cursor: isFlowDragging ? 'grabbing' : 'grab',
-              transform: `scale(${flowScale})`,
-              transformOrigin: 'top left'
-            }}
-            onMouseDown={handleFlowMouseDown}
-            onWheel={(e) => {
-              if (e.ctrlKey || e.metaKey) {
-                e.preventDefault()
-                setFlowScale(prev => Math.min(Math.max(prev + (e.deltaY > 0 ? -0.1 : 0.1), 0.5), 2))
-              }
+              right: '24px',
+              top: '668px',
+              transform: 'scale(0.85)',
+              transformOrigin: 'top right',
+              zIndex: 20
             }}
           >
-            <div style={{ position: 'relative', width: '117px', height: '260px' }}>
+            <div style={{ position: 'relative' }}>
               <div
                 className="value-display"
                 style={{
-                  transform: 'scale(0.65)',
-                  transformOrigin: 'top left',
-                  border: '5px solid #00ccff',
+                  border: '3px solid #00ccff',
                   boxShadow: '0 0 25px rgba(0, 204, 255, 0.9), inset 0 0 10px rgba(0, 204, 255, 0.3)'
                 }}
               >
@@ -1692,15 +1512,6 @@ function App() {
                   <span>m³/h</span>
                 </div>
               </div>
-              <div
-                className="resize-handle"
-                style={{ bottom: 0, right: 0 }}
-                onMouseDown={(e) => {
-                  e.stopPropagation()
-                  setIsResizingFlow(true)
-                  setResizeStart({ x: e.clientX, y: e.clientY, scale: flowScale })
-                }}
-              />
             </div>
           </div>
 

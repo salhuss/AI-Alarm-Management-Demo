@@ -1174,3 +1174,37 @@
   vertical-align: middle;
 }
 .separator-back:hover { background: #0a5a9a; border-color: #0088ff; }
+
+/* ------------------------------- separator screen: fixed faceplate row --- */
+/*
+ * The three transmitter faceplates, all the same size, anchored in one
+ * place. Previously each was independently draggable and resizable, and the
+ * level plate rendered at full size while the other two were scale(0.65),
+ * so they never matched each other.
+ */
+
+.separator-faceplates {
+  position: absolute;
+  top: 150px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 20;
+}
+
+/* One size for all three: the .value-display panel is 180px wide, scaled
+   to 0.85 so three stack inside the available height. */
+.sfp {
+  position: relative;
+  width: 153px;
+  height: 232px;
+}
+
+.sfp > .value-display {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.85);
+  transform-origin: top left;
+}
