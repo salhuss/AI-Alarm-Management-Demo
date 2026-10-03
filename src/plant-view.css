@@ -355,11 +355,11 @@
 
 .insight-card.unit-trip .insight-card-head { background-color: #0a6a7a; }
 
-.insight-card-icon { font-size: 14px; }
+.insight-card-icon { font-size: 17px; }
 
 .insight-card-title {
   flex: 1;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: bold;
   color: #fff;
   letter-spacing: 0.5px;
@@ -378,7 +378,7 @@
 
 .insight-card-headline {
   padding: 7px 10px 2px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bold;
   color: #fff;
   flex: 0 0 auto;
@@ -386,8 +386,8 @@
 
 .insight-card-subtitle {
   padding: 0 10px 7px;
-  font-size: 10px;
-  color: #9bb;
+  font-size: 12px;
+  color: #b4cccc;
   border-bottom: 1px solid #1e3448;
   flex: 0 0 auto;
 }
@@ -397,16 +397,16 @@
 .insight-card-item { margin-top: 8px; }
 
 .insight-card-label {
-  font-size: 8px;
+  font-size: 10px;
   font-weight: bold;
-  color: #66aaff;
+  color: #85bbff;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .insight-card.unit-trip .insight-card-label { color: #66ddff; }
 
-.insight-card-value { font-size: 10px; color: #dde; line-height: 1.45; }
+.insight-card-value { font-size: 12px; color: #e8e8f4; line-height: 1.5; }
 
 /* ------------------------------------------------- overview page layout --- */
 
@@ -1126,7 +1126,7 @@
    scrolling in a narrow box. */
 .insight-card.wide .insight-card-main {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 0;
   min-height: 0;
   overflow: hidden;
@@ -1143,15 +1143,15 @@
 
 .insight-card.wide .insight-card-headline {
   padding: 0;
-  font-size: 15px;
+  font-size: 19px;
   line-height: 1.25;
 }
 
 .insight-card.wide .insight-card-subtitle {
   padding: 0;
   border-bottom: none;
-  font-size: 10px;
-  line-height: 1.35;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .insight-card-stat {
@@ -1167,12 +1167,12 @@
   line-height: 1;
 }
 
-.insight-card-stat-l { font-size: 9px; color: #9bb; line-height: 1.2; }
+.insight-card-stat-l { font-size: 11px; color: #b4cccc; line-height: 1.25; }
 
 .insight-card.wide .insight-card-body {
-  padding: 9px 12px;
-  columns: 3;
-  column-gap: 18px;
+  padding: 11px 14px;
+  columns: 2;
+  column-gap: 22px;
   column-rule: 1px solid #1e3448;
   overflow-y: auto;
   min-height: 0;
@@ -1183,12 +1183,13 @@
   break-inside: avoid;
 }
 
-.insight-card.wide .insight-card-value { font-size: 9.5px; line-height: 1.4; }
+.insight-card.wide .insight-card-value { font-size: 11.5px; line-height: 1.45; }
 .insight-card.wide .insight-card-actions { border-top: 1px solid #1e3448; }
 
 /* Narrower screens cannot carry three text columns legibly. */
-@media (max-width: 1500px) {
-  .insight-card.wide .insight-card-body { columns: 2; }
+/* One column on narrower screens, where two would be too tight a measure. */
+@media (max-width: 1400px) {
+  .insight-card.wide .insight-card-body { columns: 1; }
 }
 
 /* Back link on the original separator screen, which the PFD now routes to
