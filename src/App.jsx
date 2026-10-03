@@ -44,7 +44,7 @@ function App() {
   const [flowTrendData, setFlowTrendData] = useState(Array(60).fill(150))
 
   // Draggable vessel state
-  const [vesselPosition, setVesselPosition] = useState({ x: 250, y: 350 })
+  const [vesselPosition, setVesselPosition] = useState({ x: 300, y: 330 })
   const [isVesselDragging, setIsVesselDragging] = useState(false)
   const [vesselDragOffset, setVesselDragOffset] = useState({ x: 0, y: 0 })
 
@@ -1200,10 +1200,10 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              right: '24px',
+              left: '20px',
               top: '150px',
               transform: 'scale(0.85)',
-              transformOrigin: 'top right',
+              transformOrigin: 'top left',
               zIndex: 20
             }}
           >
@@ -1313,10 +1313,10 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              right: '24px',
+              left: '20px',
               top: '409px',
               transform: 'scale(0.85)',
-              transformOrigin: 'top right',
+              transformOrigin: 'top left',
               zIndex: 20
             }}
           >
@@ -1416,10 +1416,10 @@ function App() {
           <div
             style={{
               position: 'absolute',
-              right: '24px',
+              left: '20px',
               top: '668px',
               transform: 'scale(0.85)',
-              transformOrigin: 'top right',
+              transformOrigin: 'top left',
               zIndex: 20
             }}
           >
