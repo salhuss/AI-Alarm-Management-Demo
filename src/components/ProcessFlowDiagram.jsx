@@ -17,7 +17,7 @@ import { BOUNDARY_NODES } from '../plant/index.js'
  * shows up here without touching this file.
  */
 
-const CELL_W = 296
+const CELL_W = 368
 const CELL_H = 148
 const BLOCK_W = 228
 const BLOCK_H = 162
