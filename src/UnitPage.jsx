@@ -10,6 +10,7 @@ import AlarmSummary from './components/AlarmSummary.jsx'
 import useUnitTrips from './hooks/useUnitTrips.js'
 import ContactorUnit from './components/units/ContactorUnit.jsx'
 import SalesGasUnit from './components/units/SalesGasUnit.jsx'
+import ProducedWaterUnit from './components/units/ProducedWaterUnit.jsx'
 
 /**
  * Units with a purpose-drawn graphic. Anything not listed here falls back
@@ -19,6 +20,7 @@ const CUSTOM_GRAPHIC = {
   amine: ContactorUnit,
   dehydration: ContactorUnit,
   salesGas: SalesGasUnit,
+  producedWater: ProducedWaterUnit,
 }
 import { EQUIPMENT, STREAMS, instrumentsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'

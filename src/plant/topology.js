@@ -90,14 +90,13 @@ export const EQUIPMENT = {
 
   producedWater: [
     { tag: 'V-2001-01', name: 'Produced Water Degasser', type: T.VESSEL, primary: true, level: [0, 1450], levelUnit: 'mm', press: [0, 1], pressUnit: 'barg' },
-    { tag: 'PM-2001-01A', name: 'PW Booster Pump A', type: T.PUMP, duty: 'duty', pair: 'PM-2001-01B', flow: [0, 43.72], flowUnit: 'm3/hr' },
-    { tag: 'PM-2001-01B', name: 'PW Booster Pump B', type: T.PUMP, duty: 'standby', pair: 'PM-2001-01A', flow: [0, 43.72], flowUnit: 'm3/hr' },
-    { tag: 'S-2001-01A', name: 'PW Filter A', type: T.FILTER, detail: 'Coalescing / media' },
-    { tag: 'S-2001-01B', name: 'PW Filter B', type: T.FILTER, detail: 'Coalescing / media' },
     { tag: 'PM-2001-02A', name: 'PW Injection Pump A', type: T.PUMP, duty: 'duty', pair: 'PM-2001-02B', press: [0, 200], pressUnit: 'barg' },
     { tag: 'PM-2001-02B', name: 'PW Injection Pump B', type: T.PUMP, duty: 'standby', pair: 'PM-2001-02A', press: [0, 200], pressUnit: 'barg' },
-    { tag: 'DW-01', name: 'Disposal Well DW-01 (WP-03)', type: T.WELL, press: [0, 101], pressUnit: 'barg' },
+    // Degasser and injection pumps only. The booster pumps and
+    // coalescing filters sit between them in the real line-up but
+    // carry no instruments, and the disposal well is a boundary.
   ],
+
 }
 
 export const PHASE = {
@@ -142,10 +141,8 @@ export const STREAMS = [
 
   { from: 'E-1001-02', to: 'V-2001-01', phase: PHASE.PRODUCED_WATER, label: 'Cooled produced water to degasser' },
   { from: 'V-2001-01', to: 'FLARE-LP', phase: PHASE.FLARE, label: 'Degasser off-gas to LP flare' },
-  { from: 'V-2001-01', to: 'PM-2001-01A', phase: PHASE.PRODUCED_WATER, label: 'Degassed water to booster pumps', via: 'LCV-2001-01' },
-  { from: 'PM-2001-01A', to: 'S-2001-01A', phase: PHASE.PRODUCED_WATER, label: 'Boosted water to filters' },
-  { from: 'S-2001-01A', to: 'PM-2001-02A', phase: PHASE.PRODUCED_WATER, label: 'Filtered water to injection pumps' },
-  { from: 'PM-2001-02A', to: 'DW-01', phase: PHASE.PRODUCED_WATER, label: 'Injection to disposal well', via: 'SDV-2001-01' },
+  { from: 'V-2001-01', to: 'PM-2001-02A', phase: PHASE.PRODUCED_WATER, label: 'Degassed water to injection pumps', via: 'LCV-2001-01' },
+  { from: 'PM-2001-02A', to: 'DISPOSAL-WELL', phase: PHASE.PRODUCED_WATER, label: 'Injection to disposal well', via: 'SDV-2001-01' },
 
   { from: 'U-3001-01', to: 'FLARE-HP', phase: PHASE.FLARE, label: 'Compressor blowdown', via: 'BDV-3001-02' },
 ]
@@ -155,6 +152,7 @@ export const BOUNDARY_NODES = {
   'FLARE-LP': { name: 'LP Flare Header', detail: 'to LP flare KO drum and flare package' },
   'FUEL-GAS-HEADER': { name: 'Fuel Gas Header', detail: 'power generation, compression, TEG stripping gas' },
   'U-3801-01': { name: 'Vapour Recovery Unit', detail: 'flash gas and regenerator vents' },
+  'DISPOSAL-WELL': { name: 'Disposal Well', detail: 'produced water injection at the wellpad' },
   'SALES-GAS-PIPELINE': { name: 'Export Pipeline', detail: '6" line to the gas export station' },
   'TEG-REGEN': { name: 'TEG Regeneration', detail: 'flash drum, reboiler, surge vessel and circulation pumps — out of scope' },
   'AMINE-REGEN': { name: 'Amine Regeneration', detail: 'flash drum, regenerator, reboiler, surge vessel and circulation pumps — out of scope' },

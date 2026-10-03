@@ -556,3 +556,260 @@
 
 /* The compressor column holds branch, body, caption, branch. */
 .sg-compressor { gap: 0; }
+
+/* ==================================================== produced water unit === */
+
+.pw-unit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ----------------------------------------------- degasser: horizontal vessel --- */
+
+.pw-degasser {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.pw-vessel { position: relative; }
+
+/* Horizontal cylinder, so the gradient runs top to bottom like the
+   production separator in App.css. */
+.pw-vessel-shell {
+  position: relative;
+  width: 252px;
+  height: 104px;
+  overflow: hidden;
+  border: 3px solid #141414;
+  border-radius: 52px;
+  background: linear-gradient(to bottom,
+    #2a2a2a 0%, #505050 3%, #808080 8%, #b8b8b8 20%,
+    #e8e8e8 35%, #ffffff 50%, #e8e8e8 65%,
+    #b8b8b8 80%, #808080 92%, #505050 97%, #2a2a2a 100%);
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.8),
+    inset 0 -8px 25px rgba(0, 0, 0, 0.4),
+    inset 0 8px 25px rgba(255, 255, 255, 0.6);
+}
+
+.pw-unit.tripped .pw-vessel-shell {
+  border-color: #7a1515;
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(204, 34, 34, 0.45),
+    inset 0 -8px 25px rgba(60, 0, 0, 0.45),
+    inset 0 8px 25px rgba(255, 190, 190, 0.4);
+}
+
+/* Water level */
+.pw-level {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1;
+  border-radius: 0 0 49px 49px;
+  background: linear-gradient(to bottom,
+    rgba(41, 128, 185, 0.78) 0%,
+    rgba(52, 152, 219, 0.88) 30%,
+    rgba(93, 173, 226, 0.92) 50%,
+    rgba(52, 152, 219, 0.88) 70%,
+    rgba(41, 128, 185, 0.78) 100%);
+  box-shadow:
+    inset 0 5px 15px rgba(255, 255, 255, 0.5),
+    inset 0 -5px 15px rgba(0, 0, 0, 0.4);
+  transition: height 0.5s ease;
+}
+
+.pw-unit.tripped .pw-level { filter: saturate(0.4) brightness(0.65); }
+
+/* Saddle supports */
+.pw-vessel-leg {
+  position: absolute;
+  bottom: -14px;
+  width: 30px;
+  height: 16px;
+  background: linear-gradient(to bottom, #6a6a6a, #2a2a2a);
+  border: 1px solid #141414;
+  border-top: none;
+}
+.pw-vessel-leg.left { left: 42px; }
+.pw-vessel-leg.right { right: 42px; }
+
+.pw-vessel-plate {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #141414;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.pw-vessel-tag { font: bold 14px Arial, sans-serif; letter-spacing: 0.3px; }
+.pw-vessel-name { font: 7.5px Arial, sans-serif; letter-spacing: 0.4px; }
+.pw-vessel-value { font: bold 13px 'Courier New', monospace; margin-top: 2px; }
+.pw-vessel-value small { font-size: 8px; font-weight: normal; }
+
+/* -------------------------------------------------------- injection pumps --- */
+
+.pw-pumps {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid #484848;
+  border-radius: 4px;
+  background: rgba(32, 32, 32, 0.7);
+}
+
+.pw-pumps-head {
+  font: bold 8px Arial, sans-serif;
+  color: #9a9a9a;
+  letter-spacing: 0.5px;
+}
+
+.pw-pumps-row { display: flex; gap: 14px; }
+
+.pw-pump { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+
+.pw-pump-body {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #141414;
+  background: radial-gradient(circle at 36% 30%, #d8d8d8, #8a8a8a 46%, #3a3a3a);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7), inset 0 2px 6px rgba(255, 255, 255, 0.5);
+  display: grid;
+  place-items: center;
+}
+
+/* Volute scroll, drawn as an offset arc rather than an animated impeller. */
+.pw-pump-scroll {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(20, 20, 20, 0.55);
+  border-radius: 50% 50% 50% 10%;
+  transform: rotate(-30deg);
+}
+
+/* Red = running, per the Experion electrical standard. */
+.pw-pump.running .pw-pump-body {
+  border-color: #8b1a1a;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.7), 0 0 14px rgba(204,34,34,0.55), inset 0 2px 6px rgba(255,255,255,0.4);
+}
+.pw-pump.standby .pw-pump-body { border-color: #2a5a2a; }
+.pw-pump.tripped .pw-pump-body {
+  border-color: #cc2222;
+  background: radial-gradient(circle at 36% 30%, #c08080, #7a3a3a 46%, #2a1010);
+}
+
+.pw-pump-tag { font: 8px 'Courier New', monospace; color: #9a9a9a; }
+.pw-pump-state { font: bold 7px Arial, sans-serif; }
+.pw-pump-state.running { color: #ff5555; }
+.pw-pump-state.standby { color: #5a8f5a; }
+.pw-pump-state.tripped { color: #ff3333; }
+
+.pw-discharge {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding-top: 3px;
+  border-top: 1px solid #3a3a3a;
+  width: 100%;
+  justify-content: center;
+}
+
+.pw-discharge-label { font: 7px Arial, sans-serif; color: #8a8a8a; letter-spacing: 0.4px; }
+.pw-discharge-value { font: bold 12px 'Courier New', monospace; color: #e8e8e8; }
+.pw-discharge-value small { font-size: 8px; font-weight: normal; color: #999; margin-left: 2px; }
+
+/* ------------------------------------------------------------------ pipes --- */
+
+.pw-run {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 70px;
+  min-width: 44px;
+}
+
+.pw-run-in, .pw-run-out { flex: 1 1 120px; }
+.pw-run-mid { flex: 0 1 70px; }
+
+.pw-pipe {
+  flex: 1 1 auto;
+  height: 12px;
+  background: linear-gradient(to bottom, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-top: 1px solid #141414;
+  border-bottom: 1px solid #141414;
+}
+
+.pw-pipe-v {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 24px;
+  background: linear-gradient(to right, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-left: 1px solid #141414;
+  border-right: 1px solid #141414;
+}
+
+.pw-water { box-shadow: inset 0 0 8px rgba(58, 138, 154, 0.55); }
+.pw-flare { box-shadow: inset 0 0 8px rgba(170, 48, 48, 0.5); }
+.pw-flare.venting { box-shadow: inset 0 0 10px rgba(255, 80, 80, 0.8); }
+
+.pw-arrow {
+  flex: 0 0 auto;
+  width: 0; height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+
+.pw-water-arrow { border-left: 9px solid #4a9aae; }
+
+.pw-unit.tripped .pw-pipe,
+.pw-unit.tripped .pw-pipe-v:not(.venting) { filter: saturate(0.3) brightness(0.55); }
+.pw-unit.tripped .pw-arrow { opacity: 0.35; }
+
+.pw-branch-up {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ----------------------------------------------------------------- labels --- */
+
+.pw-label {
+  display: flex;
+  flex-direction: column;
+  font: bold 9px Arial, sans-serif;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.pw-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }
+
+.pw-in-label, .pw-out-label { position: absolute; top: -34px; color: #5aa8bc; }
+.pw-in-label { left: 0; }
+.pw-out-label { right: 0; text-align: right; align-items: flex-end; }
+.pw-gas-label { color: #c05a5a; align-items: center; text-align: center; }
