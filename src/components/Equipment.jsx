@@ -1,4 +1,4 @@
-import { MOTOR_STATE, VALVE_STATE, VALVE_STYLE } from '../plant/hmiStates.js'
+import { MOTOR_STATE, MOTOR_STYLE } from '../plant/hmiStates.js'
 import { EQUIPMENT_TYPE as T } from '../plant/topology.js'
 import '../equipment.css'
 
@@ -195,23 +195,6 @@ function Exchanger({ item, state }) {
       <div className="eqp-caption">
         <span className="eqp-caption-name">{item.name}</span>
       </div>
-    </div>
-  )
-}
-
-/** SDV / BDV / control valve as a bow-tie. */
-export function ValveSymbol({ element, valveState }) {
-  const state = valveState
-    ?? (element.normal === 'OPEN' ? VALVE_STATE.OPEN : VALVE_STATE.CLOSED)
-  const style = VALVE_STYLE[state]
-
-  return (
-    <div className={`eqp-valve ${state}`} title={`${element.service} — ${element.failState ?? ''}`}>
-      <div className="eqp-valve-body">
-        <div className="eqp-valve-stem" />
-      </div>
-      <span className="eqp-valve-label">{element.tag}</span>
-      <span className="eqp-valve-state">{style.label}</span>
     </div>
   )
 }

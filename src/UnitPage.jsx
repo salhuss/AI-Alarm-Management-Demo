@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react'
-import Equipment, { ValveSymbol } from './components/Equipment.jsx'
+import Equipment from './components/Equipment.jsx'
 import { EQUIPMENT_SIZE } from './components/equipmentSizes.js'
 import Faceplate from './components/Faceplate.jsx'
 import TrendGraph from './components/TrendGraph.jsx'
@@ -18,9 +18,9 @@ const CUSTOM_GRAPHIC = {
   amine: ContactorUnit,
   dehydration: ContactorUnit,
 }
-import { EQUIPMENT, STREAMS, instrumentsForUnit, finalElementsForUnit } from './plant/index.js'
+import { EQUIPMENT, STREAMS, instrumentsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
-import { MOTOR_STATE, VALVE_STATE } from './plant/hmiStates.js'
+import { MOTOR_STATE } from './plant/hmiStates.js'
 import { relevantInstruments } from './plant/relevance.js'
 import './plant-view.css'
 
@@ -139,20 +139,18 @@ const pipeRuns = (placed, internal, stopped) => {
 
 export default function UnitPage({
   unit, values = {}, trendData = {}, unitState = 'normal',
-  valveStates = {}, motorStates = {}, onBack,
+  motorStates = {}, onBack,
   isPaused, onTogglePause, onOverride, onClearOverride, onUnitStateChange,
 }) {
   const trips = useUnitTrips({ unit, isPaused, onOverride, onClearOverride })
   const CustomGraphic = CUSTOM_GRAPHIC[unit]
   const layout = useMemo(() => layoutUnit(unit), [unit])
   const instruments = useMemo(() => instrumentsForUnit(unit), [unit])
-  const valves = useMemo(() => finalElementsForUnit(unit), [unit])
   const meta = UNIT_LAYOUT[unit]
 
   // A unit trip run from this page overrides the plant-level state.
   const localTripped = trips.scenario === 'trip'
   const effectiveState = localTripped ? 'tripped' : unitState
-  const mergedValves = { ...valveStates, ...trips.valveStates }
   const mergedMotors = { ...motorStates, ...trips.motorStates }
 
   const stopped = effectiveState === 'tripped' || effectiveState === 'shutdown'
@@ -177,13 +175,7 @@ export default function UnitPage({
     .map((inst) => ({ instrument: inst, data: trendData[inst.tag] ?? [] }))
     .filter((s) => s.data.length)
 
-  const sdvs = valves.filter((v) => v.type !== 'control')
-  const controlValves = valves.filter((v) => v.type === 'control')
 
-  const valveStateFor = (v) => mergedValves[v.tag]
-    ?? (stopped
-      ? (v.type === 'BDV' ? VALVE_STATE.OPEN : VALVE_STATE.CLOSED)
-      : (v.normal === 'OPEN' ? VALVE_STATE.OPEN : VALVE_STATE.CLOSED))
 
   const motorStateFor = (item) => mergedMotors[item.tag]
     ?? (stopped
@@ -197,7 +189,7 @@ export default function UnitPage({
         <h2 className="unit-page-title">{meta?.label ?? unit}</h2>
         <span className="unit-page-sub">{meta?.sublabel}</span>
         <span className="unit-page-count">
-          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{ordered.length} of {instruments.length} instruments · {valves.length} final elements
+          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{ordered.length} of {instruments.length} instruments
         </span>
         <span className={`unit-page-state ${effectiveState}`}>{effectiveState.toUpperCase()}</span>
       </div>
@@ -313,27 +305,11 @@ export default function UnitPage({
             aiSuppressing={trips.insight ? trips.insight.consequences : 0}
           />
         ) : (
-          <div className="unit-page-elements">
-            <div className="unit-page-panel-head">FINAL ELEMENTS</div>
-            <div className="unit-valve-row">
-              {sdvs.map((v) => (
-                <ValveSymbol key={v.tag} element={v} valveState={valveStateFor(v)} />
-              ))}
-              {sdvs.length === 0 && <span className="unit-page-empty">None</span>}
+          <div className="unit-page-idle">
+            <div className="unit-page-panel-head">ALARMS</div>
+            <div className="unit-page-empty">
+              No active alarms. Trigger a scenario to see root cause analysis.
             </div>
-
-            {controlValves.length > 0 && (
-              <>
-                <div className="unit-page-panel-head sub">CONTROL VALVES</div>
-                {controlValves.map((v) => (
-                  <div key={v.tag} className="unit-cv">
-                    <span className="unit-cv-tag">{v.tag}</span>
-                    <span className="unit-cv-sp">SP {v.setpoint} {v.eng}</span>
-                    <span className="unit-cv-by">← {v.drivenBy}</span>
-                  </div>
-                ))}
-              </>
-            )}
           </div>
         )}
       </div>
