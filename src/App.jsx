@@ -808,15 +808,6 @@ function App() {
         >
           PLANT OVERVIEW
         </button>
-        <button
-          onClick={() => setScreen('separator')}
-          style={{
-            backgroundColor: screen === 'separator' ? '#0a5a9a' : '#3a3a3a',
-            fontWeight: screen === 'separator' ? 'bold' : 'normal',
-          }}
-        >
-          SEPARATOR DETAIL
-        </button>
       </div>
 
       {screen === 'pfd' && <PlantPfd onOpenSeparator={() => setScreen('separator')} />}
