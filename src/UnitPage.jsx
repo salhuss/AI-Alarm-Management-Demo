@@ -1,6 +1,4 @@
 import { useMemo, useEffect } from 'react'
-import Equipment from './components/Equipment.jsx'
-import { EQUIPMENT_SIZE } from './components/equipmentSizes.js'
 import Faceplate from './components/Faceplate.jsx'
 import TrendGraph from './components/TrendGraph.jsx'
 import TripPanel from './components/TripPanel.jsx'
@@ -11,6 +9,7 @@ import useUnitTrips from './hooks/useUnitTrips.js'
 import ContactorUnit from './components/units/ContactorUnit.jsx'
 import SalesGasUnit from './components/units/SalesGasUnit.jsx'
 import ProducedWaterUnit from './components/units/ProducedWaterUnit.jsx'
+import WellpadUnit from './components/units/WellpadUnit.jsx'
 
 /**
  * Units with a purpose-drawn graphic. Anything not listed here falls back
@@ -21,10 +20,10 @@ const CUSTOM_GRAPHIC = {
   dehydration: ContactorUnit,
   salesGas: SalesGasUnit,
   producedWater: ProducedWaterUnit,
+  wellpads: WellpadUnit,
 }
-import { EQUIPMENT, STREAMS, instrumentsForUnit } from './plant/index.js'
-import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
-import { MOTOR_STATE } from './plant/hmiStates.js'
+import { EQUIPMENT, instrumentsForUnit } from './plant/index.js'
+import { UNIT_LAYOUT } from './plant/layout.js'
 import { relevantInstruments } from './plant/relevance.js'
 import './plant-view.css'
 
@@ -37,137 +36,26 @@ import './plant-view.css'
  * the canvas.
  */
 
-const PAD_X = 40
-const PAD_Y = 30
-const GAP_X = 70
-const GAP_Y = 44
-
-/**
- * Place equipment left to right in process order by walking the unit's
- * internal streams, wrapping to a new row when the canvas gets too wide.
- * Rows are sized to their tallest item so nothing overlaps.
- */
-const layoutUnit = (unit) => {
-  const items = EQUIPMENT[unit] ?? []
-  const tags = new Set(items.map((i) => i.tag))
-  const internal = STREAMS.filter((s) => tags.has(s.from) && tags.has(s.to))
-
-  const feeders = new Map()
-  for (const s of internal) {
-    if (!feeders.has(s.to)) feeders.set(s.to, [])
-    feeders.get(s.to).push(s.from)
-  }
-
-  const depth = new Map()
-  const resolve = (tag, seen = new Set()) => {
-    if (depth.has(tag)) return depth.get(tag)
-    if (seen.has(tag)) return 0 // recycle loop
-    seen.add(tag)
-    const up = feeders.get(tag) ?? []
-    const d = up.length ? Math.max(...up.map((u) => resolve(u, seen))) + 1 : 0
-    depth.set(tag, d)
-    return d
-  }
-  items.forEach((i) => resolve(i.tag))
-
-  const ordered = [...items].sort((a, b) => {
-    const byDepth = (depth.get(a.tag) ?? 0) - (depth.get(b.tag) ?? 0)
-    if (byDepth !== 0) return byDepth
-    // Primary equipment first within a column, standby pumps after duty.
-    if (a.primary !== b.primary) return a.primary ? -1 : 1
-    return a.tag.localeCompare(b.tag)
-  })
-
-  const MAX_W = 1120
-  const placed = []
-  let x = PAD_X
-  let y = PAD_Y
-  let rowHeight = 0
-
-  for (const item of ordered) {
-    const size = EQUIPMENT_SIZE[item.type] ?? { w: 80, h: 70 }
-
-    if (x + size.w > MAX_W && placed.length) {
-      x = PAD_X
-      y += rowHeight + GAP_Y
-      rowHeight = 0
-    }
-
-    placed.push({ item, x, y, size })
-    x += size.w + GAP_X
-    rowHeight = Math.max(rowHeight, size.h)
-  }
-
-  const width = Math.max(...placed.map((p) => p.x + p.size.w), 400) + PAD_X
-  const height = Math.max(...placed.map((p) => p.y + p.size.h), 240) + PAD_Y
-
-  return { placed, internal, width, height }
-}
-
-/** Pipe runs between placed equipment, as absolutely positioned divs. */
-const pipeRuns = (placed, internal, stopped) => {
-  const posOf = (tag) => placed.find((p) => p.item.tag === tag)
-  const runs = []
-
-  internal.forEach((stream, i) => {
-    const from = posOf(stream.from)
-    const to = posOf(stream.to)
-    if (!from || !to) return
-
-    const style = PHASE_STYLE[stream.phase] ?? { color: '#808080', width: 3 }
-    const x1 = from.x + from.size.w
-    const y1 = from.y + from.size.h / 2
-    const x2 = to.x
-    const y2 = to.y + to.size.h / 2
-    const key = `${stream.from}-${stream.to}-${i}`
-
-    if (x2 >= x1) {
-      // Forward: horizontal out, vertical, horizontal in.
-      const mid = x1 + (x2 - x1) / 2
-      runs.push({ key: `${key}-a`, left: x1, top: y1 - 2, width: Math.max(2, mid - x1), height: 4, vertical: false, stream, style })
-      if (Math.abs(y2 - y1) > 4) {
-        runs.push({ key: `${key}-b`, left: mid - 2, top: Math.min(y1, y2), width: 4, height: Math.abs(y2 - y1), vertical: true, stream, style })
-      }
-      runs.push({ key: `${key}-c`, left: mid, top: y2 - 2, width: Math.max(2, x2 - mid), height: 4, vertical: false, stream, style })
-    } else {
-      // Recycle: drop below the row and run back.
-      const below = Math.max(from.y + from.size.h, to.y + to.size.h) + 18
-      runs.push({ key: `${key}-a`, left: x1 - 2, top: y1, width: 4, height: below - y1, vertical: true, stream, style })
-      runs.push({ key: `${key}-b`, left: Math.min(x2, x1), top: below - 2, width: Math.abs(x1 - x2) + 4, height: 4, vertical: false, stream, style })
-      runs.push({ key: `${key}-c`, left: x2 - 2, top: y2, width: 4, height: below - y2, vertical: true, stream, style })
-    }
-  })
-
-  return runs.map((r) => ({ ...r, stopped }))
-}
-
 export default function UnitPage({
   unit, values = {}, trendData = {}, unitState = 'normal',
-  motorStates = {}, onBack,
+  onBack,
   isPaused, onTogglePause, onOverride, onClearOverride, onUnitStateChange,
 }) {
   const trips = useUnitTrips({ unit, isPaused, onOverride, onClearOverride })
   const CustomGraphic = CUSTOM_GRAPHIC[unit]
-  const layout = useMemo(() => layoutUnit(unit), [unit])
   const instruments = useMemo(() => instrumentsForUnit(unit), [unit])
   const meta = UNIT_LAYOUT[unit]
 
   // A unit trip run from this page overrides the plant-level state.
   const localTripped = trips.scenario === 'trip'
   const effectiveState = localTripped ? 'tripped' : unitState
-  const mergedMotors = { ...motorStates, ...trips.motorStates }
 
-  const stopped = effectiveState === 'tripped' || effectiveState === 'shutdown'
 
   // Report this unit's state upward, so its block on the PFD reflects a trip
   // run from here.
   useEffect(() => {
     onUnitStateChange?.(localTripped ? 'tripped' : 'normal')
   }, [localTripped, onUnitStateChange])
-  const runs = useMemo(
-    () => pipeRuns(layout.placed, layout.internal, stopped),
-    [layout, stopped],
-  )
 
   // The three most relevant instruments for this unit: one control point
   // plus its most informative trips. A unit may carry a dozen instruments
@@ -181,11 +69,6 @@ export default function UnitPage({
 
 
 
-  const motorStateFor = (item) => mergedMotors[item.tag]
-    ?? (stopped
-      ? MOTOR_STATE.TRIPPED
-      : item.duty === 'standby' ? MOTOR_STATE.STOPPED : MOTOR_STATE.RUNNING)
-
   return (
     <div className="unit-page">
       <div className="unit-page-head">
@@ -193,7 +76,7 @@ export default function UnitPage({
         <h2 className="unit-page-title">{meta?.label ?? unit}</h2>
         <span className="unit-page-sub">{meta?.sublabel}</span>
         <span className="unit-page-count">
-          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{ordered.length} of {instruments.length} instruments
+          {ordered.length} of {instruments.length} instruments
         </span>
         <span className={`unit-page-state ${effectiveState}`}>{effectiveState.toUpperCase()}</span>
       </div>
@@ -201,48 +84,16 @@ export default function UnitPage({
       <div className="unit-page-main">
         {/* Process graphic: purpose-drawn where one exists */}
         <div className="unit-canvas-wrap">
-          {CustomGraphic ? (
-            <div className="unit-custom-graphic">
+          <div className="unit-custom-graphic">
+            {CustomGraphic && (
               <CustomGraphic
                 unit={unit}
                 equipment={EQUIPMENT[unit]}
                 values={values}
                 unitState={effectiveState}
               />
-            </div>
-          ) : (
-            <div
-              className="unit-canvas"
-              style={{ width: layout.width, height: layout.height }}
-            >
-              {runs.map((r) => (
-                <div
-                  key={r.key}
-                  className={`eqp-pipe${r.vertical ? ' vertical' : ''}${r.stopped ? ' stopped' : ''}`}
-                  style={{
-                    left: r.left, top: r.top, width: r.width, height: r.height,
-                    borderTopColor: r.vertical ? undefined : r.style.color,
-                    borderBottomColor: r.vertical ? undefined : r.style.color,
-                    borderLeftColor: r.vertical ? r.style.color : undefined,
-                    borderRightColor: r.vertical ? r.style.color : undefined,
-                  }}
-                  title={r.stream.label}
-                />
-              ))}
-
-              {layout.placed.map(({ item, x, y }) => (
-                <div key={item.tag} className="unit-canvas-item" style={{ left: x, top: y }}>
-                  <Equipment
-                    item={item}
-                    value={values[item.tag]}
-                    state={effectiveState}
-                    motorState={motorStateFor(item)}
-                    fansRunning={stopped ? 0 : item.fans?.length}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Trip controls, fixed column */}

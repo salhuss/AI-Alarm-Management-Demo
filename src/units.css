@@ -813,3 +813,268 @@
 .pw-in-label { left: 0; }
 .pw-out-label { right: 0; text-align: right; align-items: flex-end; }
 .pw-gas-label { color: #c05a5a; align-items: center; text-align: center; }
+
+/* ========================================================== wellpad unit === */
+
+.wp-unit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 620px;
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  grid-template-rows: auto 1fr;
+  gap: 8px 0;
+  align-items: center;
+  padding: 4px 0;
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------- area gas detection --- */
+
+.wp-gas {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border: 1px solid #3a4a3a;
+  border-left: 4px solid #4a7c4a;
+  border-radius: 3px;
+  background: rgba(30, 42, 30, 0.6);
+  justify-self: start;
+}
+
+.wp-gas.warn {
+  border-color: #6a5a1a;
+  border-left-color: #c8a000;
+  background: rgba(42, 38, 20, 0.7);
+}
+
+.wp-gas.trip {
+  border-color: #7a1515;
+  border-left-color: #cc2222;
+  background: rgba(42, 20, 20, 0.8);
+  animation: wp-gas-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes wp-gas-pulse {
+  from { box-shadow: 0 0 0 rgba(204, 34, 34, 0); }
+  to { box-shadow: 0 0 16px rgba(204, 34, 34, 0.6); }
+}
+
+.wp-gas-icon { font-size: 17px; color: #7fbf7f; }
+.wp-gas.warn .wp-gas-icon { color: #ffd700; }
+.wp-gas.trip .wp-gas-icon { color: #ff5555; }
+
+.wp-gas-body { display: flex; flex-direction: column; line-height: 1.25; }
+.wp-gas-tag { font: bold 10px 'Courier New', monospace; color: #e8e8e8; }
+.wp-gas-label { font: 7px Arial, sans-serif; color: #8a8a8a; letter-spacing: 0.5px; }
+
+.wp-gas-value { font: bold 17px 'Courier New', monospace; color: #7fbf7f; }
+.wp-gas.warn .wp-gas-value { color: #ffd700; }
+.wp-gas.trip .wp-gas-value { color: #ff5555; }
+.wp-gas-value small { font-size: 9px; font-weight: normal; color: #999; margin-left: 2px; }
+
+.wp-gas-sp { font: 7px 'Courier New', monospace; color: #7a8288; }
+
+/* ------------------------------------------------------------------- pads --- */
+
+.wp-pads {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.wp-pad {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.wp-pad-name {
+  flex: 0 0 62px;
+  display: flex;
+  flex-direction: column;
+  font: bold 9px Arial, sans-serif;
+  color: #c8a000;
+  line-height: 1.3;
+}
+
+.wp-pad-wells { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; }
+
+/* Wellhead: christmas tree on a stem in a cellar */
+.wp-wellhead {
+  flex: 0 0 34px;
+  position: relative;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wp-tree {
+  width: 0; height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 15px solid #4a5a4a;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7));
+}
+
+.wp-stem {
+  width: 9px;
+  flex: 1 1 auto;
+  background: linear-gradient(to right, #3a3a3a, #9a9a9a 45%, #3a3a3a);
+  border: 1px solid #141414;
+}
+
+.wp-cellar {
+  width: 32px;
+  height: 6px;
+  background: linear-gradient(to bottom, #6a6a6a, #2a2a2a);
+  border: 1px solid #141414;
+}
+
+.wp-unit.tripped .wp-tree { border-bottom-color: #6a2a2a; }
+
+/* Pipe legs either side of the choke */
+.wp-leg {
+  position: relative;
+  flex: 1 1 60px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.wp-pipe {
+  flex: 1 1 auto;
+  height: 10px;
+  background: linear-gradient(to bottom, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-top: 1px solid #141414;
+  border-bottom: 1px solid #141414;
+}
+
+.wp-sour { box-shadow: inset 0 0 8px rgba(200, 144, 0, 0.55); }
+
+.wp-unit.tripped .wp-pipe { filter: saturate(0.3) brightness(0.55); }
+
+/* Pressure readouts above the pipe, showing the letdown across the choke */
+.wp-reading {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: bold 10px 'Courier New', monospace;
+  white-space: nowrap;
+  padding: 0 3px;
+  background: rgba(20, 20, 20, 0.8);
+  border-radius: 2px;
+}
+
+.wp-reading small { font-size: 7px; font-weight: normal; color: #999; margin-left: 1px; }
+.wp-reading.up { color: #e8b84a; }
+.wp-reading.down { color: #5fb85f; }
+.wp-reading.down.warn { color: #ffd700; }
+.wp-reading.down.trip { color: #ff5555; }
+
+/* The choke itself */
+.wp-choke {
+  flex: 0 0 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.wp-choke-body {
+  width: 0; height: 0;
+  border-left: 15px solid #8a8a3a;
+  border-right: 15px solid #8a8a3a;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.wp-choke.shut .wp-choke-body { border-left-color: #707070; border-right-color: #707070; }
+.wp-choke-label { font: 6.5px Arial, sans-serif; color: #8a8a68; letter-spacing: 0.4px; }
+
+/* Trunkline SDV per pad */
+.wp-sdv-slot {
+  flex: 0 0 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.wp-sdv {
+  width: 0; height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  position: relative;
+}
+
+.wp-sdv.open { border-left: 13px solid #4a8f4a; border-right: 13px solid #4a8f4a; }
+.wp-sdv.closed { border-left: 13px solid #707070; border-right: 13px solid #707070; }
+
+.wp-sdv-state { font: bold 6.5px Arial, sans-serif; color: #7fbf7f; }
+.wp-unit.tripped .wp-sdv-state { color: #999; }
+
+/* ------------------------------------------------------------- trunkline --- */
+
+.wp-trunk {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Vertical header the three pads tie into */
+.wp-trunk-header {
+  position: absolute;
+  left: 0;
+  top: 18%;
+  bottom: 18%;
+  width: 11px;
+  background: linear-gradient(to right, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border: 1px solid #141414;
+  box-shadow: inset 0 0 8px rgba(200, 144, 0, 0.5);
+}
+
+.wp-unit.tripped .wp-trunk-header { filter: saturate(0.3) brightness(0.55); }
+
+.wp-trunk-out {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 11px;
+  box-sizing: border-box;
+}
+
+.wp-arrow {
+  flex: 0 0 auto;
+  width: 0; height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 9px solid #c89000;
+}
+
+.wp-unit.tripped .wp-arrow { opacity: 0.35; }
+
+.wp-trunk-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 6px;
+  font: bold 9px Arial, sans-serif;
+  color: #c89000;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.wp-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }

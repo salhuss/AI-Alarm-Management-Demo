@@ -30,12 +30,14 @@ const T = EQUIPMENT_TYPE
 
 export const EQUIPMENT = {
   wellpads: [
-    { tag: 'GW-01', name: 'Well GW-01', type: T.WELL, pad: 'WP-01', flow: [0, 22], flowUnit: 'MMSCFD' },
-    { tag: 'GW-02', name: 'Well GW-02', type: T.WELL, pad: 'WP-02', flow: [0, 22], flowUnit: 'MMSCFD' },
-    { tag: 'GW-03', name: 'Well GW-03', type: T.WELL, pad: 'WP-03', flow: [0, 22], flowUnit: 'MMSCFD' },
-    { tag: 'V-6001-01', name: 'Wellpad Flare KO Drum', type: T.VESSEL, level: [0, 1810], levelUnit: 'mm' },
-    { tag: 'LP-3901-02', name: 'Mobile Pig Launcher (WP-02)', type: T.PIG },
+    { tag: 'GW-01', name: 'Well GW-01', type: T.WELL, pad: 'WP-01', flow: [0, 22], flowUnit: 'MMSCFD' , wellCount: 1 },
+    { tag: 'GW-02', name: 'Well GW-02', type: T.WELL, pad: 'WP-02', flow: [0, 22], flowUnit: 'MMSCFD' , wellCount: 4 },
+    { tag: 'GW-03', name: 'Well GW-03', type: T.WELL, pad: 'WP-03', flow: [0, 22], flowUnit: 'MMSCFD' , wellCount: 2 },
+    // One wellhead per pad, carrying that pad's well count. The
+    // flare KO drum and the pig launcher/receiver are relief and
+    // maintenance equipment outside the production path.
   ],
+
 
   separator: [
     { tag: 'LP-3901-03', name: 'Mobile Pig Receiver', type: T.PIG },
