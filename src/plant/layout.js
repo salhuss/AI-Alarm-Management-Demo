@@ -18,11 +18,11 @@ import { EQUIPMENT, STREAMS, BOUNDARY_NODES, PHASE } from './index.js'
  */
 export const UNIT_LAYOUT = {
   wellpads: { col: 0, row: 2, label: 'WELLPADS', sublabel: 'WP-01/02/03' },
-  separator: { col: 3, row: 2, label: 'PRODUCTION SEPARATION', sublabel: '3-phase separator' },
-  amine: { col: 6, row: 1, label: 'AMINE SWEETENING', sublabel: 'H2S removal' },
-  dehydration: { col: 9, row: 1, label: 'GAS DEHYDRATION', sublabel: 'TEG contactor' },
-  salesGas: { col: 12, row: 1, label: 'SALES GAS', sublabel: 'export compression' },
-  producedWater: { col: 6, row: 4, label: 'PRODUCED WATER', sublabel: 'treatment & injection' },
+  separator: { col: 1, row: 2, label: 'PRODUCTION SEPARATION', sublabel: '3-phase separator' },
+  amine: { col: 2, row: 1, label: 'AMINE SWEETENING', sublabel: 'H2S removal' },
+  dehydration: { col: 3, row: 1, label: 'GAS DEHYDRATION', sublabel: 'TEG contactor' },
+  salesGas: { col: 4, row: 1, label: 'SALES GAS', sublabel: 'export compression' },
+  producedWater: { col: 2, row: 4, label: 'PRODUCED WATER', sublabel: 'treatment & injection' },
 }
 
 export const UNIT_KEYS = Object.keys(UNIT_LAYOUT)

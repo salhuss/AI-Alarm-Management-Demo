@@ -17,10 +17,10 @@ import { BOUNDARY_NODES } from '../plant/index.js'
  * shows up here without touching this file.
  */
 
-const CELL_W = 150
-const CELL_H = 132
-const BLOCK_W = 188
-const BLOCK_H = 142
+const CELL_W = 296
+const CELL_H = 148
+const BLOCK_W = 228
+const BLOCK_H = 162
 const PAD = 40
 
 const STATE_STYLE = {
@@ -88,41 +88,41 @@ function UnitBlock({ unitKey, state, value, onSelect, isSelected, originY = 0 })
         <rect width={BLOCK_W} height={BLOCK_H} rx="3" fill="none" stroke="#0088ff" strokeWidth="1" strokeDasharray="4 2" />
       )}
 
-      <text x={BLOCK_W / 2} y="21" textAnchor="middle" className="pfd-unit-label">
+      <text x={BLOCK_W / 2} y="25" textAnchor="middle" className="pfd-unit-label">
         {layout.label}
       </text>
-      <text x={BLOCK_W / 2} y="37" textAnchor="middle" className="pfd-unit-sublabel">
+      <text x={BLOCK_W / 2} y="45" textAnchor="middle" className="pfd-unit-sublabel">
         {layout.sublabel}
       </text>
 
       {summary.primary && (
-        <text x={BLOCK_W / 2} y="56" textAnchor="middle" className="pfd-unit-tag">
+        <text x={BLOCK_W / 2} y="69" textAnchor="middle" className="pfd-unit-tag">
           {summary.primary.tag}
         </text>
       )}
 
       {value && (
-        <text x={BLOCK_W / 2} y="86" textAnchor="middle" className="pfd-unit-value">
+        <text x={BLOCK_W / 2} y="103" textAnchor="middle" className="pfd-unit-value">
           {value.value}
           <tspan className="pfd-unit-unit"> {value.unit}</tspan>
         </text>
       )}
 
-      <text x={BLOCK_W / 2} y="106" textAnchor="middle" className="pfd-unit-state" fill={style.text}>
+      <text x={BLOCK_W / 2} y="126" textAnchor="middle" className="pfd-unit-state" fill={style.text}>
         {state === 'tripped' || state === 'shutdown' ? '■' : '●'} {style.label}
       </text>
 
       {/* Collapsed circulation loop indicator */}
       {summary.loops.length > 0 && (
-        <g transform={`translate(8 ${BLOCK_H - 26})`}>
-          <rect width={BLOCK_W - 16} height="19" rx="3" fill="rgba(170,140,215,0.22)" stroke="#9a7ac8" strokeWidth="1" />
-          <text x={(BLOCK_W - 16) / 2} y="13.5" textAnchor="middle" className="pfd-loop-badge">
+        <g transform={`translate(9 ${BLOCK_H - 29})`}>
+          <rect width={BLOCK_W - 18} height="22" rx="3" fill="rgba(170,140,215,0.22)" stroke="#9a7ac8" strokeWidth="1" />
+          <text x={(BLOCK_W - 18) / 2} y="15.5" textAnchor="middle" className="pfd-loop-badge">
             ↻ {summary.loops[0].family} loop · {summary.loops[0].equipmentCount} items
           </text>
         </g>
       )}
 
-      <text x={BLOCK_W - 7} y="16" textAnchor="end" className="pfd-unit-count">
+      <text x={BLOCK_W - 8} y="19" textAnchor="end" className="pfd-unit-count">
         {summary.equipmentCount}
       </text>
     </g>
