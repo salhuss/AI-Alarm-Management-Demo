@@ -319,3 +319,267 @@
   padding: 10px;
   box-sizing: border-box;
 }
+
+/* ======================================================== sales gas unit === */
+
+.sg-unit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+/* ------------------------------------------------------------ compressor --- */
+
+.sg-compressor, .sg-meter {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sg-comp-body {
+  position: relative;
+  width: 196px;
+  height: 118px;
+  border: 3px solid #141414;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #2c2c36, #585868 45%, #7a7a8c 52%, #585868 60%, #2c2c36);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.78),
+    inset 0 3px 10px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.sg-unit.tripped .sg-comp-body {
+  border-color: #7a1515;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.78),
+    0 0 20px rgba(204, 34, 34, 0.45),
+    inset 0 3px 10px rgba(255, 190, 190, 0.25);
+}
+
+/* Compression stages */
+.sg-comp-stages { display: flex; gap: 7px; align-items: flex-end; }
+
+.sg-stage {
+  width: 20px;
+  height: 58px;
+  border: 2px solid #141414;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #9a9aae, #4a4a5c);
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.4);
+}
+
+.sg-stage:nth-child(2) { height: 46px; }
+.sg-stage:nth-child(3) { height: 36px; }
+
+.sg-stage.running {
+  border-color: #6a1a1a;
+  animation: sg-stroke 0.55s ease-in-out infinite alternate;
+}
+.sg-stage.running:nth-child(2) { animation-delay: 0.18s; }
+.sg-stage.running:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes sg-stroke {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* Discharge pressure gauge */
+.sg-gauge { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+
+.sg-gauge-face {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid #141414;
+  background: radial-gradient(circle at 38% 32%, #f4f4f4, #c8c8c8 60%, #9a9a9a);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.sg-gauge-needle {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 2px;
+  height: 20px;
+  background: #aa0000;
+  transform-origin: bottom center;
+  transition: transform 0.5s ease;
+}
+
+.sg-gauge-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.sg-gauge-value {
+  font: bold 11px 'Courier New', monospace;
+  color: #e8e8e8;
+  white-space: nowrap;
+}
+.sg-gauge-value small { font-size: 8px; font-weight: normal; color: #999; margin-left: 2px; }
+
+/* --------------------------------------------------------- metering skid --- */
+
+.sg-meter-body {
+  position: relative;
+  width: 138px;
+  height: 100px;
+  border: 3px solid #141414;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #2a3030, #4e5a5a 45%, #6e7c7c 52%, #4e5a5a 60%, #2a3030);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.75),
+    inset 0 3px 10px rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.sg-unit.tripped .sg-meter-body { border-color: #7a1515; }
+
+/* Two metering runs with turbine rotors */
+.sg-meter-runs { display: flex; flex-direction: column; gap: 8px; }
+
+.sg-meter-run {
+  width: 94px;
+  height: 17px;
+  border: 2px solid #141414;
+  border-radius: 9px;
+  background: linear-gradient(to bottom, #3a3a3a, #8e8e8e 45%, #c4c4c4 52%, #8e8e8e 60%, #3a3a3a);
+  display: grid;
+  place-items: center;
+}
+
+.sg-meter-rotor {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #2a4a6a;
+  position: relative;
+  background: #d8d8d8;
+}
+
+.sg-meter-rotor::before,
+.sg-meter-rotor::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-top: 2px solid #2a4a6a;
+}
+.sg-meter-rotor::after { transform: rotate(60deg); }
+
+.sg-meter-rotor.turning { animation: sg-spin 0.8s linear infinite; }
+
+@keyframes sg-spin { to { transform: rotate(360deg); } }
+
+.sg-meter-badge {
+  font: bold 7px Arial, sans-serif;
+  color: #9bc;
+  text-align: center;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+/* --------------------------------------------------------------- caption --- */
+
+.sg-caption {
+  margin-top: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.35;
+}
+
+.sg-caption-tag { font: bold 11px 'Courier New', monospace; color: #e8e8e8; }
+.sg-caption-name { font: 7.5px Arial, sans-serif; color: #8a8a8a; letter-spacing: 0.4px; }
+.sg-caption-state { font: bold 8px Arial, sans-serif; margin-top: 1px; }
+.sg-caption-state.running { color: #7fbf7f; }
+.sg-caption-state.tripped { color: #ff5555; }
+
+/* ----------------------------------------------------------------- pipes --- */
+
+.sg-pipe-h, .sg-pipe-v { position: absolute; }
+
+.sg-pipe-h {
+  height: 12px;
+  background: linear-gradient(to bottom, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-top: 1px solid #141414;
+  border-bottom: 1px solid #141414;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: -14px;
+}
+
+.sg-pipe-v {
+  width: 12px;
+  background: linear-gradient(to right, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-left: 1px solid #141414;
+  border-right: 1px solid #141414;
+}
+
+.sg-dry { box-shadow: inset 0 0 8px rgba(58, 143, 208, 0.55); }
+.sg-fuelgas { box-shadow: inset 0 0 8px rgba(154, 122, 192, 0.55); }
+.sg-flare { box-shadow: inset 0 0 8px rgba(170, 48, 48, 0.5); }
+.sg-flare.venting { box-shadow: inset 0 0 10px rgba(255, 80, 80, 0.8); }
+
+.sg-unit.tripped .sg-pipe-h,
+.sg-unit.tripped .sg-pipe-v:not(.venting) { filter: saturate(0.3) brightness(0.55); }
+
+/* Geometry: in -> compressor -> mid -> meter -> out */
+.sg-in .sg-pipe-h { left: 0; width: 86px; }
+.sg-mid { position: relative; width: 58px; z-index: 1; }
+.sg-mid .sg-pipe-h { left: 0; width: 58px; }
+.sg-out .sg-pipe-h { right: 0; width: 86px; }
+
+.sg-in, .sg-out { position: absolute; top: 0; bottom: 0; width: 86px; }
+.sg-in { left: 0; }
+.sg-out { right: 0; }
+
+/* Fuel gas drops into the compressor from above */
+.sg-fuel { position: absolute; left: 50%; top: 0; margin-left: -150px; height: 50%; }
+.sg-fuel .sg-pipe-v { left: 0; top: 18px; height: calc(100% - 46px); }
+
+/* Blowdown leaves the compressor downward */
+.sg-blowdown { position: absolute; left: 50%; bottom: 0; margin-left: -96px; height: 44%; }
+.sg-blowdown .sg-pipe-v { left: 0; bottom: 20px; height: calc(100% - 20px); }
+
+/* ---------------------------------------------------------------- labels --- */
+
+.sg-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  font: bold 9px Arial, sans-serif;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.sg-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }
+
+.sg-in-label { left: 2px; top: calc(50% - 56px); color: #5a9fd8; }
+.sg-out-label { right: 2px; top: calc(50% - 56px); color: #5a9fd8; text-align: right; align-items: flex-end; }
+.sg-fuel-label { left: 18px; top: 0; color: #a582d2; }
+.sg-bd-label { left: 18px; bottom: 0; color: #c05a5a; }

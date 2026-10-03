@@ -82,8 +82,11 @@ export const EQUIPMENT = {
       press: [0, 200], pressUnit: 'barg',
     },
     { tag: 'U-3001-02', name: 'Export Gas Metering Package', type: T.METER, detail: 'Custody transfer skid' },
-    { tag: 'EXPORT-PIPELINE', name: 'Export Pipeline', type: T.FLARE, detail: '6" gas export' },
+    // Compressor and metering skid only. The pig launcher is
+    // maintenance equipment outside the gas path, and the export
+    // pipeline is a boundary rather than equipment.
   ],
+
 
   producedWater: [
     { tag: 'V-2001-01', name: 'Produced Water Degasser', type: T.VESSEL, primary: true, level: [0, 1450], levelUnit: 'mm', press: [0, 1], pressUnit: 'barg' },
@@ -127,7 +130,7 @@ export const STREAMS = [
   { from: 'C-2201-01', to: 'C-1101-01', phase: PHASE.SWEET_GAS, label: 'Sweet gas to dehydration', via: 'SDV-1101-02' },
   { from: 'C-1101-01', to: 'U-3001-01', phase: PHASE.DRY_GAS, label: 'Dry gas to compression' },
   { from: 'U-3001-01', to: 'U-3001-02', phase: PHASE.DRY_GAS, label: 'Compressed export gas' },
-  { from: 'U-3001-02', to: 'EXPORT-PIPELINE', phase: PHASE.DRY_GAS, label: 'Sales gas to pipeline', via: 'SDV-3001-01' },
+  { from: 'U-3001-02', to: 'SALES-GAS-PIPELINE', phase: PHASE.DRY_GAS, label: 'Sales gas to export pipeline', via: 'SDV-3001-01' },
 
   { from: 'FUEL-GAS-HEADER', to: 'U-3001-01', phase: PHASE.FUEL_GAS, label: 'Fuel gas to compressor', utility: true },
 
@@ -152,6 +155,7 @@ export const BOUNDARY_NODES = {
   'FLARE-LP': { name: 'LP Flare Header', detail: 'to LP flare KO drum and flare package' },
   'FUEL-GAS-HEADER': { name: 'Fuel Gas Header', detail: 'power generation, compression, TEG stripping gas' },
   'U-3801-01': { name: 'Vapour Recovery Unit', detail: 'flash gas and regenerator vents' },
+  'SALES-GAS-PIPELINE': { name: 'Export Pipeline', detail: '6" line to the gas export station' },
   'TEG-REGEN': { name: 'TEG Regeneration', detail: 'flash drum, reboiler, surge vessel and circulation pumps — out of scope' },
   'AMINE-REGEN': { name: 'Amine Regeneration', detail: 'flash drum, regenerator, reboiler, surge vessel and circulation pumps — out of scope' },
   'EXPORT-PIPELINE': { name: 'Export Pipeline', detail: '6" to export station' },
