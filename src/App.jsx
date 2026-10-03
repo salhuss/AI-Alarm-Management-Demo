@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import PlantOverview from './PlantOverview.jsx'
 import PlantPfd from './PlantPfd.jsx'
 import './App.css'
 
@@ -799,19 +798,9 @@ function App() {
         >
           PROCESS FLOW
         </button>
-        <button
-          onClick={() => setScreen('overview')}
-          style={{
-            backgroundColor: screen === 'overview' ? '#0a5a9a' : '#3a3a3a',
-            fontWeight: screen === 'overview' ? 'bold' : 'normal',
-          }}
-        >
-          PLANT OVERVIEW
-        </button>
       </div>
 
       {screen === 'pfd' && <PlantPfd onOpenSeparator={() => setScreen('separator')} />}
-      {screen === 'overview' && <PlantOverview />}
 
       {/* Main Display Area */}
       <div className="main-display" style={{ display: screen === 'separator' ? undefined : 'none' }}>
