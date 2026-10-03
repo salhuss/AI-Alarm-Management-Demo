@@ -468,14 +468,14 @@
 .pfd-unit rect { transition: stroke-width 120ms ease; }
 .pfd-unit:hover rect:first-of-type { stroke-width: 3; }
 
-.pfd-unit-label { font: bold 10px Arial, sans-serif; fill: #e8e8e8; letter-spacing: 0.3px; }
-.pfd-unit-sublabel { font: 8px Arial, sans-serif; fill: #8a8a8a; }
-.pfd-unit-tag { font: 9px 'Courier New', monospace; fill: #747c84; }
-.pfd-unit-value { font: bold 17px 'Courier New', monospace; fill: #fff; }
-.pfd-unit-unit { font: 8px Arial, sans-serif; fill: #999; }
-.pfd-unit-state { font: bold 8px Arial, sans-serif; }
-.pfd-unit-count { font: 8px 'Courier New', monospace; fill: #666; }
-.pfd-loop-badge { font: 7px Arial, sans-serif; fill: #b89ad8; }
+.pfd-unit-label { font: bold 12px Arial, sans-serif; fill: #f4f4f4; letter-spacing: 0.3px; }
+.pfd-unit-sublabel { font: 10px Arial, sans-serif; fill: #c0c8c0; }
+.pfd-unit-tag { font: bold 11px 'Courier New', monospace; fill: #d4dcd4; }
+.pfd-unit-value { font: bold 22px 'Courier New', monospace; fill: #fff; }
+.pfd-unit-unit { font: 10px Arial, sans-serif; fill: #b8c0b8; }
+.pfd-unit-state { font: bold 10px Arial, sans-serif; }
+.pfd-unit-count { font: bold 10px 'Courier New', monospace; fill: #9aa89a; }
+.pfd-loop-badge { font: 9px Arial, sans-serif; fill: #d4c0ee; }
 .pfd-boundary { font: 8px Arial, sans-serif; fill: #999; }
 
 /* Streams: dash offset animates to suggest flow direction */

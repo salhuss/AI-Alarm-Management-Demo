@@ -17,33 +17,37 @@ import { BOUNDARY_NODES } from '../plant/index.js'
  * shows up here without touching this file.
  */
 
-const CELL_W = 118
-const CELL_H = 104
-const BLOCK_W = 150
-const BLOCK_H = 112
+const CELL_W = 150
+const CELL_H = 132
+const BLOCK_W = 188
+const BLOCK_H = 142
 const PAD = 40
 
 const STATE_STYLE = {
-  normal: { border: '#4a7c4a', bg: '#1e2a1e', text: '#7fbf7f', label: 'RUNNING' },
-  alarm: { border: '#c8a000', bg: '#2a2614', text: '#ffd700', label: 'ALARM' },
-  tripped: { border: '#cc2222', bg: '#2a1414', text: '#ff5555', label: 'TRIPPED' },
-  shutdown: { border: '#cc00cc', bg: '#26142a', text: '#ff66ff', label: 'SHUTDOWN' },
+  normal: { border: '#6aa86a', bg: '#2d3f2d', text: '#a8e0a8', label: 'RUNNING' },
+  alarm: { border: '#d8b800', bg: '#3d3718', text: '#ffe14d', label: 'ALARM' },
+  tripped: { border: '#e04040', bg: '#3d1e1e', text: '#ff8a8a', label: 'TRIPPED' },
+  shutdown: { border: '#e050e0', bg: '#381f3d', text: '#ff9aff', label: 'SHUTDOWN' },
 }
 
-/** Grid cell to pixel centre. */
+/**
+ * Grid cell to pixel centre. `originY` lifts the whole diagram so the
+ * topmost row sits at the padding: the units occupy rows 1, 2 and 4, so
+ * row 0 would otherwise render as an empty band.
+ */
 const cx = (col) => PAD + col * CELL_W + BLOCK_W / 2
-const cy = (row) => PAD + row * CELL_H + BLOCK_H / 2
+const cy = (row, originY = 0) => PAD + row * CELL_H - originY + BLOCK_H / 2
 
 /**
  * Route a stream between two blocks as an orthogonal path. Horizontal
  * neighbours get a straight line; anything else gets a right-angled dogleg,
  * which is how a real PFD draws it.
  */
-const routePath = (from, to) => {
+const routePath = (from, to, originY = 0) => {
   const x1 = cx(from.col) + BLOCK_W / 2
-  const y1 = cy(from.row)
+  const y1 = cy(from.row, originY)
   const x2 = cx(to.col) - BLOCK_W / 2
-  const y2 = cy(to.row)
+  const y2 = cy(to.row, originY)
 
   if (Math.abs(y1 - y2) < 4) return `M ${x1} ${y1} L ${x2} ${y2}`
 
@@ -53,18 +57,20 @@ const routePath = (from, to) => {
 }
 
 /** Boundary nodes (flare, VRU, pipeline) sit below their source unit. */
+const BOUNDARY_ROW = 5.7
+
 const boundaryPos = (sourceUnit, index) => {
   const src = UNIT_LAYOUT[sourceUnit]
-  if (!src) return { col: 0, row: 6 }
-  return { col: src.col, row: 6 + (index % 2) * 0.6 }
+  if (!src) return { col: 0, row: BOUNDARY_ROW }
+  return { col: src.col, row: BOUNDARY_ROW + (index % 2) * 0.55 }
 }
 
-function UnitBlock({ unitKey, state, value, onSelect, isSelected }) {
+function UnitBlock({ unitKey, state, value, onSelect, isSelected, originY = 0 }) {
   const layout = UNIT_LAYOUT[unitKey]
   const summary = useMemo(() => unitSummary(unitKey), [unitKey])
   const style = STATE_STYLE[state] ?? STATE_STYLE.normal
   const x = cx(layout.col) - BLOCK_W / 2
-  const y = cy(layout.row) - BLOCK_H / 2
+  const y = cy(layout.row, originY) - BLOCK_H / 2
 
   return (
     <g
@@ -82,41 +88,41 @@ function UnitBlock({ unitKey, state, value, onSelect, isSelected }) {
         <rect width={BLOCK_W} height={BLOCK_H} rx="3" fill="none" stroke="#0088ff" strokeWidth="1" strokeDasharray="4 2" />
       )}
 
-      <text x={BLOCK_W / 2} y="17" textAnchor="middle" className="pfd-unit-label">
+      <text x={BLOCK_W / 2} y="21" textAnchor="middle" className="pfd-unit-label">
         {layout.label}
       </text>
-      <text x={BLOCK_W / 2} y="30" textAnchor="middle" className="pfd-unit-sublabel">
+      <text x={BLOCK_W / 2} y="37" textAnchor="middle" className="pfd-unit-sublabel">
         {layout.sublabel}
       </text>
 
       {summary.primary && (
-        <text x={BLOCK_W / 2} y="46" textAnchor="middle" className="pfd-unit-tag">
+        <text x={BLOCK_W / 2} y="56" textAnchor="middle" className="pfd-unit-tag">
           {summary.primary.tag}
         </text>
       )}
 
       {value && (
-        <text x={BLOCK_W / 2} y="68" textAnchor="middle" className="pfd-unit-value">
+        <text x={BLOCK_W / 2} y="86" textAnchor="middle" className="pfd-unit-value">
           {value.value}
           <tspan className="pfd-unit-unit"> {value.unit}</tspan>
         </text>
       )}
 
-      <text x={BLOCK_W / 2} y="84" textAnchor="middle" className="pfd-unit-state" fill={style.text}>
+      <text x={BLOCK_W / 2} y="106" textAnchor="middle" className="pfd-unit-state" fill={style.text}>
         {state === 'tripped' || state === 'shutdown' ? '■' : '●'} {style.label}
       </text>
 
       {/* Collapsed circulation loop indicator */}
       {summary.loops.length > 0 && (
-        <g transform={`translate(6 ${BLOCK_H - 20})`}>
-          <rect width={BLOCK_W - 12} height="15" rx="2" fill="rgba(160,128,208,0.15)" stroke="#8060b0" strokeWidth="0.5" />
-          <text x={(BLOCK_W - 12) / 2} y="11" textAnchor="middle" className="pfd-loop-badge">
+        <g transform={`translate(8 ${BLOCK_H - 26})`}>
+          <rect width={BLOCK_W - 16} height="19" rx="3" fill="rgba(170,140,215,0.22)" stroke="#9a7ac8" strokeWidth="1" />
+          <text x={(BLOCK_W - 16) / 2} y="13.5" textAnchor="middle" className="pfd-loop-badge">
             ↻ {summary.loops[0].family} loop · {summary.loops[0].equipmentCount} items
           </text>
         </g>
       )}
 
-      <text x={BLOCK_W - 5} y="13" textAnchor="end" className="pfd-unit-count">
+      <text x={BLOCK_W - 7} y="16" textAnchor="end" className="pfd-unit-count">
         {summary.equipmentCount}
       </text>
     </g>
@@ -147,8 +153,25 @@ export default function ProcessFlowDiagram({ unitStates = {}, unitValues = {}, s
 
   const posOf = (key) => UNIT_LAYOUT[key] ?? boundaryLayout[key]
 
-  const width = PAD * 2 + 13 * CELL_W
-  const height = PAD * 2 + 7.4 * CELL_H
+  // Extent of the real content: the unit blocks plus any boundary nodes.
+  const rowsUsed = UNIT_KEYS.map((k) => UNIT_LAYOUT[k].row)
+  const colsUsed = UNIT_KEYS.map((k) => UNIT_LAYOUT[k].col)
+  const boundaryRows = Object.values(boundaryLayout).map((p) => p.row)
+
+  const minRow = Math.min(...rowsUsed)
+  const maxRow = Math.max(...rowsUsed, ...(boundaryRows.length ? boundaryRows : [minRow]))
+  const maxCol = Math.max(...colsUsed)
+
+  // Shift so the topmost content sits at the padding rather than wherever
+  // its grid row happens to fall.
+  const originY = minRow * CELL_H
+
+  const width = PAD * 2 + maxCol * CELL_W + BLOCK_W
+  // The lowest content is a boundary pill (28px, centred on its row) when
+  // there are any, otherwise a unit block.
+  const lowestIsBoundary = boundaryRows.length > 0 && Math.max(...boundaryRows) > Math.max(...rowsUsed)
+  const bottomExtent = lowestIsBoundary ? BLOCK_H / 2 + 20 : BLOCK_H
+  const height = PAD * 2 + (maxRow - minRow) * CELL_H + bottomExtent
 
   // Phases actually present, for the legend.
   const phasesUsed = [...new Set(streams.map((s) => s.phase))]
@@ -185,7 +208,7 @@ export default function ProcessFlowDiagram({ unitStates = {}, unitValues = {}, s
             return (
               <g key={`${s.fromUnit}-${s.toUnit}-${s.phase}-${i}`}>
                 <path
-                  d={routePath(from, to)}
+                  d={routePath(from, to, originY)}
                   fill="none"
                   stroke={stopped ? '#5a3030' : style.color}
                   strokeWidth={style.width}
@@ -207,7 +230,7 @@ export default function ProcessFlowDiagram({ unitStates = {}, unitValues = {}, s
             const meta = BOUNDARY_NODES[b.tag]
             if (!pos || !meta) return null
             return (
-              <g key={b.tag} transform={`translate(${cx(pos.col) - 56} ${cy(pos.row) - 14})`}>
+              <g key={b.tag} transform={`translate(${cx(pos.col) - 56} ${cy(pos.row, originY) - 14})`}>
                 <rect width="112" height="28" rx="14" fill="#1f1f1f" stroke="#555" strokeWidth="1" strokeDasharray="3 2" />
                 <text x="56" y="18" textAnchor="middle" className="pfd-boundary">{meta.name}</text>
               </g>
@@ -223,6 +246,7 @@ export default function ProcessFlowDiagram({ unitStates = {}, unitValues = {}, s
               value={unitValues[unitKey]}
               isSelected={selectedUnit === unitKey}
               onSelect={onSelectUnit}
+              originY={originY}
             />
           ))}
         </svg>
