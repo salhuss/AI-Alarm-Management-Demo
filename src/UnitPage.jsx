@@ -20,6 +20,7 @@ const CUSTOM_GRAPHIC = {
 import { EQUIPMENT, STREAMS, instrumentsForUnit, finalElementsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
 import { MOTOR_STATE, VALVE_STATE } from './plant/hmiStates.js'
+import { relevantInstruments } from './plant/relevance.js'
 import './plant-view.css'
 
 /**
@@ -165,14 +166,13 @@ export default function UnitPage({
     [layout, stopped],
   )
 
-  // Control first, then safeguarding — the order an operator scans.
-  const ordered = useMemo(() => {
-    const rank = { control: 0, safeguarding: 1, monitoring: 2 }
-    return [...instruments].sort((a, b) => (rank[a.duty] ?? 9) - (rank[b.duty] ?? 9))
-  }, [instruments])
+  // The three most relevant instruments for this unit: one control point
+  // plus its most informative trips. A unit may carry a dozen instruments
+  // across equipment that is not on the drawing, and showing all of them
+  // is noise — see plant/relevance.js.
+  const ordered = useMemo(() => relevantInstruments(unit), [unit])
 
   const series = ordered
-    .slice(0, 4)
     .map((inst) => ({ instrument: inst, data: trendData[inst.tag] ?? [] }))
     .filter((s) => s.data.length)
 
@@ -196,7 +196,7 @@ export default function UnitPage({
         <h2 className="unit-page-title">{meta?.label ?? unit}</h2>
         <span className="unit-page-sub">{meta?.sublabel}</span>
         <span className="unit-page-count">
-          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{instruments.length} instruments · {valves.length} final elements
+          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{ordered.length} of {instruments.length} instruments · {valves.length} final elements
         </span>
         <span className={`unit-page-state ${effectiveState}`}>{effectiveState.toUpperCase()}</span>
       </div>

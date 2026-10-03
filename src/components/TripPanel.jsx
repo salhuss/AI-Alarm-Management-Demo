@@ -2,11 +2,12 @@
  * Trip controls on the unit page — the AI scenarios, driven by this unit's
  * own instruments rather than a hardcoded separator.
  *
- * Trip buttons are offered per safeguarding instrument that actually has a
- * setpoint, so each stage demonstrates root cause analysis on its real
- * trips. Predictive maintenance and nuisance shelving pick the instrument
- * that suits them: a control point for degradation, a point whose high
- * alarm sits near its operating band for chatter.
+ * `instruments` is already the unit's relevant selection (see
+ * plant/relevance.js), so this offers a trip for each of those that has a
+ * setpoint rather than every trip in the unit. Predictive maintenance and
+ * nuisance shelving pick from the same selection: a control point for
+ * degradation, and whichever point's high alarm sits closest to its
+ * operating band for chatter.
  */
 
 export default function TripPanel({
