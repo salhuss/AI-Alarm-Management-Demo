@@ -4,6 +4,7 @@ import { EQUIPMENT_SIZE } from './components/equipmentSizes.js'
 import Faceplate from './components/Faceplate.jsx'
 import TrendGraph from './components/TrendGraph.jsx'
 import TripPanel from './components/TripPanel.jsx'
+import { traceColorFor } from './components/traceColors.js'
 import InsightCard from './components/InsightCard.jsx'
 import AlarmSummary from './components/AlarmSummary.jsx'
 import useUnitTrips from './hooks/useUnitTrips.js'
@@ -242,8 +243,8 @@ export default function UnitPage({
           )}
         </div>
 
-        {/* Faceplates, fixed column */}
-        <div className="unit-page-faceplates">
+        {/* Trip controls, fixed column */}
+        <div className="unit-page-controls">
           <TripPanel
             instruments={ordered}
             scenario={trips.scenario}
@@ -256,18 +257,25 @@ export default function UnitPage({
             isPaused={isPaused}
             onTogglePause={onTogglePause}
           />
-          <div className="unit-page-panel-head">FACEPLATES</div>
-          {ordered.map((inst) => (
+        </div>
+      </div>
+
+      {/* Faceplates: their own row, so they are all visible at once */}
+      <div className="unit-page-faceplates">
+        {ordered.map((inst) => {
+          // Faceplates that have a line on the trend carry its colour.
+          const seriesIndex = series.findIndex((s) => s.instrument.tag === inst.tag)
+          return (
             <Faceplate
               key={inst.tag}
               instrument={inst}
               value={values[inst.tag] ?? inst.envelope?.normal ?? inst.setpoint}
               health={trips.health[inst.tag] ?? 100}
-              compact={ordered.length > 5}
+              traceColor={seriesIndex >= 0 ? traceColorFor(seriesIndex) : undefined}
             />
-          ))}
-          {ordered.length === 0 && <div className="unit-page-empty">No instruments on this unit</div>}
-        </div>
+          )
+        })}
+        {ordered.length === 0 && <div className="unit-page-empty">No instruments on this unit</div>}
       </div>
 
       <div className="unit-page-foot">

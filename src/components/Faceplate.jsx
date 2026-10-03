@@ -1,127 +1,134 @@
+import { limitCrossed } from '../plant/hmiStates.js'
+
 /**
  * Instrument faceplate — fixed position, not draggable.
  *
- * Generic over any instrument from the dataset: reading, bar against
- * range with limit ticks, the four setpoints, status, and a PV footer.
- * Replaces the three hand-written faceplates in App.jsx, which were
- * near-identical copies differing only in which tag they displayed.
+ * Matches the original separator faceplate: light grey panel, blue gradient
+ * header, large black reading, cyan vertical bar with the scale beside it,
+ * the four setpoints colour-coded, and PvHH/PvHi/PvLo/PvLL status naming.
+ *
+ * `traceColor` ties the faceplate to its line on the trend graph — the
+ * header carries a band in the trace colour and the tag is marked with a
+ * swatch, so you can tell at a glance which plate belongs to which trace.
  */
 
-import { limitCrossed, PRIORITY_STYLE, priorityFor } from '../plant/hmiStates.js'
-
-/** Where a value sits in the instrument's range, as a percentage. */
 const pct = (value, [min, max]) => {
   if (max === min) return 0
   return Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100))
 }
 
-const STATUS = {
-  HH: { label: 'PV HIGH-HIGH', color: '#ff5555', bg: '#4a1010' },
-  H: { label: 'PV HIGH', color: '#ffd700', bg: '#3a3010' },
-  L: { label: 'PV LOW', color: '#ffd700', bg: '#3a3010' },
-  LL: { label: 'PV LOW-LOW', color: '#ff5555', bg: '#4a1010' },
-  NORMAL: { label: 'NORMAL', color: '#7fbf7f', bg: '#1a2a1a' },
-  BAD_PV: { label: 'BAD PV', color: '#66ddff', bg: '#102a3a' },
+/** Status text and colour, following the original's PvXX naming. */
+const statusFor = (value, instrument, health) => {
+  if (health < 80) return { icon: '⚠️', text: 'BadPv', color: '#0066aa', bold: true }
+
+  const crossed = limitCrossed(value, instrument)
+  if (!crossed) return { icon: '✓', text: 'Normal', color: '#006600', bold: false }
+
+  switch (crossed.limit) {
+    case 'HH': return { icon: '🚨', text: 'PvHH - TRIP', color: '#ff0000', bold: true }
+    case 'H': return { icon: '⚠️', text: 'PvHi - WARNING', color: '#cc6600', bold: false }
+    case 'L': return { icon: '⚠️', text: 'PvLo - WARNING', color: '#cc6600', bold: false }
+    case 'LL': return { icon: '🚨', text: 'PvLL - TRIP', color: '#ff0000', bold: true }
+    default: return { icon: '✓', text: 'Normal', color: '#006600', bold: false }
+  }
 }
 
-export default function Faceplate({ instrument, value, health = 100, compact = false }) {
+export default function Faceplate({ instrument, value, health = 100, traceColor }) {
   if (!instrument) return null
 
-  const { tag, service, range, eng, alarms = {}, trips = {}, duty, sil, setpoint, drives } = instrument
+  const { tag, service, range, eng, alarms = {}, trips = {}, duty, sil, setpoint } = instrument
 
-  const badPv = health < 80
-  const crossed = badPv ? null : limitCrossed(value, instrument)
-  const status = badPv ? STATUS.BAD_PV : crossed ? STATUS[crossed.limit] : STATUS.NORMAL
-
-  const priority = crossed
-    ? priorityFor({ kind: crossed.kind, duty })
-    : null
-
+  const status = statusFor(value, instrument, health)
   const decimals = eng === 'mm' ? 0 : range[1] <= 1 ? 2 : 1
-  const barPct = pct(value, range)
+  const barPct = value == null ? 0 : pct(value, range)
 
-  // Limit ticks on the bar, positioned by their place in the range.
-  const ticks = [
-    { key: 'HH', v: trips.HH, color: '#ff3333' },
-    { key: 'H', v: alarms.H, color: '#ffaa00' },
-    { key: 'L', v: alarms.L, color: '#ffaa00' },
-    { key: 'LL', v: trips.LL, color: '#ff3333' },
-  ].filter((t) => t.v != null && t.v >= range[0] && t.v <= range[1])
-
-  // A trip above full span can't be drawn on the bar — flag it instead.
+  // A trip setpoint outside the calibrated span cannot be drawn on the bar.
   const overRange = [trips.HH, trips.LL].filter(
     (v) => v != null && (v > range[1] || v < range[0]),
   )
 
+  const tripped = status.text.includes('TRIP')
+
   return (
-    <div className={`fp${compact ? ' compact' : ''}`} style={{ borderColor: status.color }}>
-      <div className="fp-head" style={{ backgroundColor: status.bg }}>
-        <span className="fp-tag">{tag}</span>
-        {sil && <span className="fp-sil">{sil}</span>}
+    <div
+      className="vd"
+      style={tripped ? {
+        border: '4px solid #ff0000',
+        boxShadow: '0 0 20px rgba(255,0,0,0.85), inset 0 0 8px rgba(255,0,0,0.25)',
+      } : undefined}
+    >
+      {/* Trace colour band, tying this plate to its line on the trend */}
+      {traceColor && <div className="vd-trace" style={{ backgroundColor: traceColor }} />}
+
+      <div className="vd-header">
+        <span>{tag}</span>
+        {sil && <span className="vd-sil">{sil}</span>}
       </div>
 
-      <div className="fp-service">{service}</div>
-
-      <div className="fp-reading">
-        <div className="fp-value" style={{ color: status.color }}>
-          {value == null ? '---' : value.toFixed(decimals)}
-          <span className="fp-eng">{eng}</span>
+      <div className="vd-body">
+        <div className="vd-tag">
+          {traceColor && <span className="vd-swatch" style={{ backgroundColor: traceColor }} />}
+          {tag}
         </div>
+        <div className="vd-desc">{service}</div>
 
-        <div className="fp-bar-wrap">
-          <div className="fp-bar">
-            <div
-              className="fp-bar-fill"
-              style={{ height: `${barPct}%`, backgroundColor: status.color }}
-            />
-            {ticks.map((t) => (
-              <div
-                key={t.key}
-                className="fp-bar-tick"
-                style={{ bottom: `${pct(t.v, range)}%`, borderTopColor: t.color }}
-                title={`${t.key} ${t.v} ${eng}`}
-              />
-            ))}
+        {/* Reading with vertical bar and scale */}
+        <div className="vd-reading">
+          <div className="vd-number">{value == null ? '---' : value.toFixed(decimals)}</div>
+          <div className="vd-bar-group">
+            <div className="vd-bar-scale">
+              <span>{range[1]}</span>
+              <span>{range[0]}</span>
+            </div>
+            <div className="vd-bar-container">
+              <div className="vd-bar-fill" style={{ height: `${barPct}%` }} />
+              {/* Limit ticks, drawn where they fall in the range */}
+              {trips.HH != null && trips.HH <= range[1] && (
+                <div className="vd-tick trip" style={{ bottom: `${pct(trips.HH, range)}%` }} />
+              )}
+              {alarms.H != null && (
+                <div className="vd-tick warn" style={{ bottom: `${pct(alarms.H, range)}%` }} />
+              )}
+              {alarms.L != null && (
+                <div className="vd-tick warn" style={{ bottom: `${pct(alarms.L, range)}%` }} />
+              )}
+              {trips.LL != null && trips.LL >= range[0] && (
+                <div className="vd-tick trip" style={{ bottom: `${pct(trips.LL, range)}%` }} />
+              )}
+            </div>
+            <div className="vd-bar-label">{eng}</div>
           </div>
-          <div className="fp-bar-scale">
-            <span>{range[1]}</span>
-            <span>{range[0]}</span>
+        </div>
+
+        {/* The four setpoints, colour-coded as in the original */}
+        <div className="vd-setpoints">
+          {trips.HH != null && <div className="vd-sp trip">HH (Trip) <b>{trips.HH}</b></div>}
+          {alarms.H != null && <div className="vd-sp warn">Hi (Warn) <b>{alarms.H}</b></div>}
+          {setpoint != null && <div className="vd-sp sp">SP <b>{setpoint}</b></div>}
+          {alarms.L != null && <div className="vd-sp warn">Lo (Warn) <b>{alarms.L}</b></div>}
+          {trips.LL != null && <div className="vd-sp trip">LL (Trip) <b>{trips.LL}</b></div>}
+        </div>
+
+        <div className="vd-status" style={{ color: status.color, fontWeight: status.bold ? 'bold' : 'normal' }}>
+          <span className="vd-status-icon">{status.icon}</span>
+          <span>{status.text}</span>
+        </div>
+
+        {overRange.length > 0 && (
+          <div className="vd-overrange" title="Trip setpoint lies outside the calibrated span — asserts on over-range">
+            ⚠ trip {overRange.join(', ')} beyond span
           </div>
-        </div>
-      </div>
-
-      {!compact && (
-        <div className="fp-setpoints">
-          {trips.HH != null && <div className="fp-sp"><span className="fp-sp-k hh">HH</span>{trips.HH}</div>}
-          {alarms.H != null && <div className="fp-sp"><span className="fp-sp-k h">H</span>{alarms.H}</div>}
-          {setpoint != null && <div className="fp-sp"><span className="fp-sp-k sp">SP</span>{setpoint}</div>}
-          {alarms.L != null && <div className="fp-sp"><span className="fp-sp-k l">L</span>{alarms.L}</div>}
-          {trips.LL != null && <div className="fp-sp"><span className="fp-sp-k ll">LL</span>{trips.LL}</div>}
-        </div>
-      )}
-
-      <div className="fp-status" style={{ color: status.color, backgroundColor: status.bg }}>
-        {badPv ? '◆' : crossed ? '▲' : '●'} {status.label}
-        {priority && (
-          <span className="fp-priority" style={{ color: PRIORITY_STYLE[priority].color }}>
-            {PRIORITY_STYLE[priority].label}
-          </span>
         )}
       </div>
 
-      {!compact && (
-        <div className="fp-foot">
-          <span className="fp-foot-duty">{duty?.toUpperCase() ?? ''}</span>
-          {drives && <span className="fp-foot-drives">→ {drives}</span>}
-          {health < 100 && <span className="fp-foot-health">health {health.toFixed(0)}%</span>}
-        </div>
-      )}
-
-      {overRange.length > 0 && !compact && (
-        <div className="fp-overrange" title="Trip setpoint lies outside the calibrated span — asserts on over-range">
-          ⚠ trip {overRange.join(', ')} beyond span
-        </div>
-      )}
+      <div className="vd-footer">
+        <span>PV</span>
+        <span className="vd-mode">{duty === 'control' ? 'M' : 'ESD'}</span>
+        <span className="vd-footer-value">
+          {value == null ? '---' : value.toFixed(decimals)} {eng}
+        </span>
+        {health < 100 && <span className="vd-health">{health.toFixed(0)}%</span>}
+      </div>
     </div>
   )
 }

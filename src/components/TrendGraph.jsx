@@ -1,3 +1,5 @@
+import { TRACE_COLORS } from './traceColors.js'
+
 /**
  * Multi-parameter trend graph — fixed position, not draggable.
  *
@@ -14,7 +16,7 @@ const H = 200
 const PAD_L = 6
 const PAD_R = 0
 
-const TRACE_COLORS = ['#4a9a4a', '#c89000', '#3a8fd0', '#9a7ac0', '#c05a5a']
+
 
 /** Normalise a value to 0-100 within its instrument's range. */
 const norm = (value, [min, max]) => {

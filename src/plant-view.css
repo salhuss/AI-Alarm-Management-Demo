@@ -547,101 +547,6 @@
   color: #ffd700;
 }
 
-/* ============================================================ faceplates === */
-/* Fixed position — no drag, no resize. */
-
-.fp {
-  display: flex;
-  flex-direction: column;
-  background-color: #222;
-  border: 2px solid #8a8a8a;
-  border-radius: 3px;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.fp-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 3px 6px;
-  border-bottom: 1px solid #444;
-}
-
-.fp-tag { font: bold 10px 'Courier New', monospace; color: #fff; }
-.fp-sil { font: 7px Arial, sans-serif; color: #ffaa00; border: 1px solid #885500; padding: 0 3px; border-radius: 2px; }
-.fp-service { padding: 3px 6px; font-size: 8px; color: #999; line-height: 1.3; border-bottom: 1px solid #333; }
-
-.fp-reading { display: flex; gap: 6px; padding: 6px; align-items: stretch; }
-
-.fp-value { flex: 1; font: bold 20px 'Courier New', monospace; display: flex; align-items: baseline; gap: 3px; }
-.fp-eng { font: 8px Arial, sans-serif; color: #999; }
-
-.fp-bar-wrap { display: flex; gap: 2px; }
-
-.fp-bar {
-  position: relative;
-  width: 14px;
-  min-height: 52px;
-  background-color: #1a1a1a;
-  border: 1px solid #555;
-}
-
-.fp-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 400ms ease; }
-
-.fp-bar-tick {
-  position: absolute; left: -2px; right: -2px;
-  border-top: 1px solid;
-  pointer-events: none;
-}
-
-.fp-bar-scale {
-  display: flex; flex-direction: column; justify-content: space-between;
-  font: 6px 'Courier New', monospace; color: #777;
-}
-
-.fp-setpoints {
-  display: flex; flex-wrap: wrap; gap: 2px 6px;
-  padding: 4px 6px;
-  border-top: 1px solid #333;
-  font: 8px 'Courier New', monospace; color: #ccc;
-}
-
-.fp-sp { display: inline-flex; gap: 3px; align-items: center; }
-.fp-sp-k { font-weight: bold; font-size: 7px; padding: 0 2px; border-radius: 1px; }
-.fp-sp-k.hh, .fp-sp-k.ll { background: #4a1010; color: #ff5555; }
-.fp-sp-k.h, .fp-sp-k.l { background: #3a3010; color: #ffd700; }
-.fp-sp-k.sp { background: #10304a; color: #66ddff; }
-
-.fp-status {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 3px 6px;
-  font: bold 9px Arial, sans-serif;
-  border-top: 1px solid #333;
-}
-
-.fp-priority { font-size: 7px; }
-
-.fp-foot {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  padding: 3px 6px;
-  font: 7px 'Courier New', monospace; color: #777;
-  background: #1c1c1c;
-}
-
-.fp-foot-drives { color: #66aaff; }
-.fp-foot-health { color: #ffaa00; }
-
-.fp-overrange {
-  padding: 2px 6px;
-  font-size: 7px; color: #ffaa00;
-  background: rgba(200,160,0,0.12);
-  border-top: 1px solid #553300;
-}
-
-.fp.compact .fp-value { font-size: 15px; }
-.fp.compact .fp-bar { min-height: 38px; }
-
 /* =========================================================== trend graph === */
 
 .trend {
@@ -841,11 +746,13 @@
 
 .unit-page-main {
   display: grid;
-  grid-template-columns: 1fr 272px;
+  grid-template-columns: 1fr 240px;
   gap: 8px;
-  flex: 1 1 64%;
+  flex: 1 1 42%;
   min-height: 0;
 }
+
+.unit-page-controls { overflow-y: auto; min-height: 0; }
 
 /* Process canvas — equipment absolutely positioned with pipe runs */
 .unit-canvas-wrap {
@@ -861,14 +768,17 @@
 .unit-canvas { position: relative; }
 .unit-canvas-item { position: absolute; z-index: 2; }
 
+/* Faceplates get their own full-width row so every plate is visible at
+   once, rather than scrolling in a narrow side column. */
 .unit-page-faceplates {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-  min-height: 0;
-  padding-right: 2px;
+  gap: 7px;
+  flex: 0 0 auto;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
+
+.unit-page-faceplates > .vd { width: 186px; min-width: 186px; }
 
 .unit-page-panel-head {
   font: bold 9px Arial, sans-serif;
@@ -882,10 +792,10 @@
 
 .unit-page-foot {
   display: grid;
-  grid-template-columns: 1fr 330px;
+  grid-template-columns: 1fr 300px;
   gap: 8px;
-  flex: 1 1 36%;
-  min-height: 0;
+  flex: 1 1 34%;
+  min-height: 170px;
 }
 
 .unit-page-elements {
@@ -1021,3 +931,172 @@
 
 /* PFD page with no panels below: the diagram fills the screen. */
 .plant-pfd-page > .pfd:only-child { flex: 1 1 auto; }
+
+/* ============================================================ faceplates === */
+/*
+ * Matches the original separator faceplate in App.css: light grey panel,
+ * blue gradient header, large black reading, cyan vertical bar. Fixed
+ * position — no drag, no resize.
+ */
+
+.vd {
+  position: relative;
+  background-color: #d0d0d0;
+  border: 2px solid #1a1a1a;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+/* Band in the trend trace colour, so plate and trace are linked */
+.vd-trace { height: 4px; width: 100%; }
+
+.vd-header {
+  background: linear-gradient(to bottom, #4a9fd8, #3578b8);
+  color: #fff;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vd-sil {
+  font-size: 8px;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.vd-body { padding: 8px 9px; background-color: #c8c8c8; }
+
+.vd-tag {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vd-swatch {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.vd-desc { font-size: 9px; color: #333; line-height: 1.25; margin-bottom: 4px; }
+
+.vd-reading {
+  display: flex;
+  align-items: flex-end;
+  margin: 8px 0 6px;
+  gap: 7px;
+}
+
+.vd-number {
+  flex: 1;
+  font-size: 24px;
+  font-weight: bold;
+  color: #1a1a1a;
+  text-align: right;
+  padding-right: 4px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.vd-bar-group { display: flex; align-items: flex-end; gap: 4px; }
+
+.vd-bar-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 76px;
+  font-size: 8px;
+  color: #555;
+}
+
+.vd-bar-container {
+  position: relative;
+  width: 26px;
+  height: 76px;
+  border: 2px solid #666;
+  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vd-bar-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, #00c8d8, #00e8f8);
+  transition: height 0.5s ease;
+}
+
+/* Limit ticks across the bar */
+.vd-tick { position: absolute; left: 0; right: 0; height: 0; }
+.vd-tick.trip { border-top: 2px solid #ff0000; }
+.vd-tick.warn { border-top: 1px dashed #cc6600; }
+
+.vd-bar-label { font-size: 10px; color: #333; writing-mode: vertical-rl; }
+
+.vd-setpoints {
+  font-size: 9.5px;
+  color: #1a1a1a;
+  margin: 6px 0;
+  line-height: 1.45;
+}
+
+.vd-sp { display: flex; justify-content: space-between; }
+.vd-sp b { font-variant-numeric: tabular-nums; }
+.vd-sp.trip { color: #cc0000; font-weight: bold; }
+.vd-sp.warn { color: #aa5500; }
+.vd-sp.sp { color: #005588; }
+
+.vd-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 6px 0 2px;
+  font-size: 11px;
+}
+
+.vd-status-icon { font-size: 12px; }
+
+.vd-overrange {
+  font-size: 8px;
+  color: #884400;
+  background: rgba(200, 160, 0, 0.18);
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+.vd-footer {
+  background-color: #e8e8e8;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vd-mode {
+  background-color: #5a5a5a;
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-weight: bold;
+  font-size: 9px;
+}
+
+.vd-footer-value { flex: 1; text-align: right; font-weight: bold; font-variant-numeric: tabular-nums; }
+.vd-health { color: #aa5500; font-weight: bold; }
