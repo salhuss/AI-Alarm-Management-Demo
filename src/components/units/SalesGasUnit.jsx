@@ -40,34 +40,29 @@ export default function SalesGasUnit({ equipment = [], values = {}, unitState = 
 
   return (
     <div className={`sg-unit${tripped ? ' tripped' : ''}`}>
-      {/* Dry gas in, from dehydration */}
-      <div className="sg-stream sg-in">
-        <div className="sg-pipe-h sg-dry" />
+      {/* Dry gas in, from dehydration. The runs are flex items in the row
+          so they always meet the equipment either side. */}
+      <div className="sg-run sg-run-in">
         <span className="sg-label sg-in-label">
           DRY GAS
           <span className="sg-label-sub">from dehydration</span>
         </span>
+        <div className="sg-pipe sg-dry" />
+        <span className="sg-arrow sg-dry-arrow" />
       </div>
 
-      {/* Fuel gas in, the compressor's own supply */}
-      <div className="sg-stream sg-fuel">
-        <div className="sg-pipe-v sg-fuelgas" />
-        <span className="sg-label sg-fuel-label">
-          FUEL GAS
-          <span className="sg-label-sub">to driver</span>
-        </span>
-      </div>
-
-      {/* Compressor package */}
+      {/* Compressor package, with its fuel gas supply and blowdown */}
       {compressor && (
         <div className="sg-compressor">
-          <div className="sg-comp-body">
-            <div className="sg-comp-stages">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className={`sg-stage${tripped ? '' : ' running'}`} />
-              ))}
-            </div>
+          <div className="sg-branch sg-branch-up">
+            <span className="sg-label sg-fuel-label">
+              FUEL GAS
+              <span className="sg-label-sub">to driver</span>
+            </span>
+            <div className="sg-pipe-v sg-fuelgas" />
+          </div>
 
+          <div className="sg-comp-body">
             {/* Discharge pressure gauge */}
             {inst && (
               <div className="sg-gauge">
@@ -90,25 +85,27 @@ export default function SalesGasUnit({ equipment = [], values = {}, unitState = 
               {tripped ? '■ SHUTDOWN' : '● RUNNING'}
             </span>
           </div>
+
+          <div className="sg-branch sg-branch-down">
+            <div className={`sg-pipe-v sg-flare${tripped ? ' venting' : ''}`} />
+            <span className="sg-label sg-bd-label">
+              BLOWDOWN
+              <span className="sg-label-sub">{tripped ? 'VENTING to flare' : 'to HP flare'}</span>
+            </span>
+          </div>
         </div>
       )}
 
       {/* Compressed gas between the two */}
-      <div className="sg-stream sg-mid">
-        <div className="sg-pipe-h sg-dry" />
+      <div className="sg-run sg-run-mid">
+        <div className="sg-pipe sg-dry" />
+        <span className="sg-arrow sg-dry-arrow" />
       </div>
 
       {/* Metering skid */}
       {meter && (
         <div className="sg-meter">
           <div className="sg-meter-body">
-            <div className="sg-meter-runs">
-              {[0, 1].map((i) => (
-                <div key={i} className="sg-meter-run">
-                  <span className={`sg-meter-rotor${tripped ? '' : ' turning'}`} />
-                </div>
-              ))}
-            </div>
             <div className="sg-meter-badge">CUSTODY<br />TRANSFER</div>
           </div>
 
@@ -123,20 +120,12 @@ export default function SalesGasUnit({ equipment = [], values = {}, unitState = 
       )}
 
       {/* Sales gas out, to the export pipeline */}
-      <div className="sg-stream sg-out">
-        <div className="sg-pipe-h sg-dry" />
+      <div className="sg-run sg-run-out">
+        <div className="sg-pipe sg-dry" />
+        <span className="sg-arrow sg-dry-arrow" />
         <span className="sg-label sg-out-label">
           SALES GAS
           <span className="sg-label-sub">to export pipeline</span>
-        </span>
-      </div>
-
-      {/* Blowdown to flare */}
-      <div className="sg-stream sg-blowdown">
-        <div className={`sg-pipe-v sg-flare${tripped ? ' venting' : ''}`} />
-        <span className="sg-label sg-bd-label">
-          BLOWDOWN
-          <span className="sg-label-sub">{tripped ? 'VENTING to flare' : 'to HP flare'}</span>
         </span>
       </div>
     </div>
