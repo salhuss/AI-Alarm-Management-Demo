@@ -123,12 +123,15 @@
 /* ------------------------------------------------- counter-current flow --- */
 
 /* Gas rising through the trays */
+.au-flow-up.au-sour { --flow-gas: rgba(200, 144, 0, 0.30); }
+.au-flow-up.au-sweet { --flow-gas: rgba(74, 154, 74, 0.28); }
+
 .au-flow-up {
   position: absolute;
   inset: 20px 34px 30px;
   z-index: 1;
   background: repeating-linear-gradient(to top,
-    rgba(200, 144, 0, 0.30) 0px, rgba(200, 144, 0, 0.30) 4px,
+    var(--flow-gas, rgba(200, 144, 0, 0.30)) 0px, var(--flow-gas, rgba(200, 144, 0, 0.30)) 4px,
     transparent 4px, transparent 15px);
   animation: au-rise 1.5s linear infinite;
   pointer-events: none;
@@ -136,17 +139,20 @@
 
 @keyframes au-rise { to { background-position: 0 -15px; } }
 
-/* Amine falling down the walls */
+/* Solvent falling down the walls */
+.au-flow-down.amine { --flow-liq: rgba(205, 145, 80, 0.45); }
+.au-flow-down.glycol { --flow-liq: rgba(165, 130, 210, 0.45); }
+
 .au-flow-down {
   position: absolute;
   inset: 16px 12px 30px;
   z-index: 1;
   background:
     repeating-linear-gradient(to bottom,
-      rgba(205, 145, 80, 0.45) 0px, rgba(205, 145, 80, 0.45) 6px,
+      var(--flow-liq, rgba(205, 145, 80, 0.45)) 0px, var(--flow-liq, rgba(205, 145, 80, 0.45)) 6px,
       transparent 6px, transparent 22px) left / 5px 100% repeat-y,
     repeating-linear-gradient(to bottom,
-      rgba(205, 145, 80, 0.45) 0px, rgba(205, 145, 80, 0.45) 6px,
+      var(--flow-liq, rgba(205, 145, 80, 0.45)) 0px, var(--flow-liq, rgba(205, 145, 80, 0.45)) 6px,
       transparent 6px, transparent 22px) right / 5px 100% repeat-y;
   animation: au-fall 1.9s linear infinite;
   pointer-events: none;
@@ -172,6 +178,15 @@
     inset 0 5px 14px rgba(255, 255, 255, 0.45),
     inset 0 -5px 14px rgba(0, 0, 0, 0.45);
   transition: height 0.5s ease;
+}
+
+.au-level.glycol {
+  background: linear-gradient(to bottom,
+    rgba(110, 80, 160, 0.80) 0%,
+    rgba(140, 105, 190, 0.88) 30%,
+    rgba(165, 130, 210, 0.92) 50%,
+    rgba(140, 105, 190, 0.88) 70%,
+    rgba(110, 80, 160, 0.80) 100%);
 }
 
 .amine-unit.tripped .au-level { filter: saturate(0.45) brightness(0.65); }
@@ -221,8 +236,11 @@
 /* Service tint on the pipe runs */
 .au-pipe-h.au-sour, .au-pipe-v.au-sour { box-shadow: inset 0 0 8px rgba(200, 144, 0, 0.55); }
 .au-pipe-h.au-sweet, .au-pipe-v.au-sweet { box-shadow: inset 0 0 8px rgba(74, 154, 74, 0.55); }
+.au-pipe-h.au-dry, .au-pipe-v.au-dry { box-shadow: inset 0 0 8px rgba(58, 143, 208, 0.55); }
 .au-pipe-h.au-amine, .au-pipe-v.au-amine { box-shadow: inset 0 0 8px rgba(205, 145, 80, 0.55); }
 .au-pipe-h.au-rich, .au-pipe-v.au-rich { box-shadow: inset 0 0 8px rgba(150, 90, 40, 0.6); }
+.au-pipe-h.au-leanteg, .au-pipe-v.au-leanteg { box-shadow: inset 0 0 8px rgba(165, 130, 210, 0.55); }
+.au-pipe-h.au-richteg, .au-pipe-v.au-richteg { box-shadow: inset 0 0 8px rgba(110, 80, 160, 0.6); }
 
 .amine-unit.tripped .au-pipe-h,
 .amine-unit.tripped .au-pipe-v { filter: saturate(0.3) brightness(0.55); }
@@ -259,6 +277,14 @@
 .au-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }
 
 .au-amine-label { left: 8px; top: 0px; color: #cd9150; align-items: flex-start; }
+.dehydration .au-amine-label { color: #a582d2; }
+.dehydration .au-sweet-label { color: #5a9fd8; }
+.dehydration .au-sour-label { color: #5fb85f; }
+.dehydration .au-rich-label { color: #8a6ab0; }
+.dehydration .au-amine-label::after { border-left-color: #a582d2; }
+.dehydration .au-sweet-label::after { border-left-color: #5a9fd8; }
+.dehydration .au-sour-label::after { border-left-color: #5fb85f; }
+.dehydration .au-rich-label::after { border-top-color: #8a6ab0; }
 .au-sweet-label { right: 8px; top: 0px; color: #5fb85f; align-items: flex-end; text-align: right; }
 .au-sour-label { left: 8px; top: 204px; color: #c89000; align-items: flex-start; }
 .au-rich-label { left: calc(50% + 14px); top: 266px; color: #a06a34; align-items: flex-start; }

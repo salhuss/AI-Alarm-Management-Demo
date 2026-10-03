@@ -8,14 +8,15 @@ import { traceColorFor } from './components/traceColors.js'
 import InsightCard from './components/InsightCard.jsx'
 import AlarmSummary from './components/AlarmSummary.jsx'
 import useUnitTrips from './hooks/useUnitTrips.js'
-import AmineUnit from './components/units/AmineUnit.jsx'
+import ContactorUnit from './components/units/ContactorUnit.jsx'
 
 /**
  * Units with a purpose-drawn graphic. Anything not listed here falls back
  * to the generic topology-driven layout until it gets its own drawing.
  */
 const CUSTOM_GRAPHIC = {
-  amine: AmineUnit,
+  amine: ContactorUnit,
+  dehydration: ContactorUnit,
 }
 import { EQUIPMENT, STREAMS, instrumentsForUnit, finalElementsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
@@ -206,7 +207,12 @@ export default function UnitPage({
         <div className="unit-canvas-wrap">
           {CustomGraphic ? (
             <div className="unit-custom-graphic">
-              <CustomGraphic values={values} unitState={effectiveState} />
+              <CustomGraphic
+                unit={unit}
+                equipment={EQUIPMENT[unit]}
+                values={values}
+                unitState={effectiveState}
+              />
             </div>
           ) : (
             <div

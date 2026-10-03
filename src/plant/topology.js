@@ -67,15 +67,13 @@ export const EQUIPMENT = {
       detail: 'Column with integral inlet scrubber', primary: true,
       level: [0, 800], levelUnit: 'mm',
     },
-    { tag: 'E-1101-01', name: 'Gas/Glycol Exchanger', type: T.EXCHANGER },
-    { tag: 'V-1101-02', name: 'TEG Flash Drum', type: T.VESSEL, level: [0, 1100], levelUnit: 'mm', press: [0, 10], pressUnit: 'barg' },
-    { tag: 'E-1101-04', name: 'Glycol Reboiler', type: T.EXCHANGER, level: [0, 650], levelUnit: 'mm', temp: [160, 250], tempUnit: 'degC' },
-    { tag: 'E-1101-02', name: 'Glycol Reflux Condenser', type: T.EXCHANGER },
-    { tag: 'H-1101-01', name: 'Electric Glycol Heater', type: T.FIRED_HEATER, temp: [0, 290], tempUnit: 'degC', detail: 'skin temperature' },
-    { tag: 'V-1101-03', name: 'TEG Surge Vessel', type: T.VESSEL, level: [0, 550], levelUnit: 'mm' },
-    { tag: 'P-1101-01A', name: 'Lean TEG Circulation Pump A', type: T.PUMP, duty: 'duty', pair: 'P-1101-01B', flow: [0, 3.3], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
-    { tag: 'P-1101-01B', name: 'Lean TEG Circulation Pump B', type: T.PUMP, duty: 'standby', pair: 'P-1101-01A', flow: [0, 3.3], flowUnit: 'm3/hr', press: [0, 65], pressUnit: 'barg' },
+    // The contactor is the only equipment modelled in this unit. The
+    // regeneration side (gas/glycol exchanger, flash drum, reboiler, reflux
+    // condenser, glycol heater, surge vessel and circulation pumps) is
+    // intentionally out of scope: the demo shows wet gas in, dry gas out,
+    // glycol circulating.
   ],
+
 
   salesGas: [
     {
@@ -127,27 +125,17 @@ export const STREAMS = [
 
   { from: 'E-1001-01', to: 'C-2201-01', phase: PHASE.SOUR_GAS, label: 'Cooled sour gas to contactor bottom' },
   { from: 'C-2201-01', to: 'C-1101-01', phase: PHASE.SWEET_GAS, label: 'Sweet gas to dehydration', via: 'SDV-1101-02' },
-  { from: 'C-1101-01', to: 'E-1101-01', phase: PHASE.DRY_GAS, label: 'Dry gas overhead' },
-  { from: 'E-1101-01', to: 'U-3001-01', phase: PHASE.DRY_GAS, label: 'Dry gas to compression' },
+  { from: 'C-1101-01', to: 'U-3001-01', phase: PHASE.DRY_GAS, label: 'Dry gas to compression' },
   { from: 'U-3001-01', to: 'U-3001-02', phase: PHASE.DRY_GAS, label: 'Compressed export gas' },
   { from: 'U-3001-02', to: 'EXPORT-PIPELINE', phase: PHASE.DRY_GAS, label: 'Sales gas to pipeline', via: 'SDV-3001-01' },
 
   { from: 'FUEL-GAS-HEADER', to: 'U-3001-01', phase: PHASE.FUEL_GAS, label: 'Fuel gas to compressor', utility: true },
-  { from: 'C-1101-01', to: 'E-1101-04', phase: PHASE.STRIPPING_GAS, label: 'Stripping gas to reboiler', via: 'SDV-1101-03' },
 
   { from: 'C-2201-01', to: 'AMINE-REGEN', phase: PHASE.RICH_AMINE, label: 'Rich amine to regeneration', via: 'LCV-2201-05' },
   { from: 'AMINE-REGEN', to: 'C-2201-01', phase: PHASE.LEAN_AMINE, label: 'Lean amine to contactor top', recycle: true },
 
-  { from: 'C-1101-01', to: 'V-1101-02', phase: PHASE.RICH_TEG, label: 'Rich TEG from contactor bottom', via: 'SDV-1101-01' },
-  { from: 'V-1101-02', to: 'E-1101-04', phase: PHASE.RICH_TEG, label: 'Rich TEG to reboiler', via: 'SDV-1101-06' },
-  { from: 'E-1101-04', to: 'E-1101-02', phase: PHASE.FLASH_GAS, label: 'Water vapour to reflux condenser' },
-  { from: 'E-1101-02', to: 'U-3801-01', phase: PHASE.FLASH_GAS, label: 'Vent to VRU' },
-  { from: 'H-1101-01', to: 'E-1101-04', phase: PHASE.LEAN_TEG, label: 'Heater duty', utility: true },
-  { from: 'E-1101-04', to: 'V-1101-03', phase: PHASE.LEAN_TEG, label: 'Regenerated lean TEG to surge' },
-  { from: 'V-1101-03', to: 'P-1101-01A', phase: PHASE.LEAN_TEG, label: 'Lean TEG to circulation pumps' },
-  { from: 'P-1101-01A', to: 'E-1101-01', phase: PHASE.LEAN_TEG, label: 'Lean TEG to gas/glycol exchanger' },
-  { from: 'E-1101-01', to: 'C-1101-01', phase: PHASE.LEAN_TEG, label: 'Lean TEG to contactor top', recycle: true },
-  { from: 'E-1101-01', to: 'FLARE-HP', phase: PHASE.FLARE, label: 'Dehydration blowdown', via: 'BDV-1101-05' },
+  { from: 'C-1101-01', to: 'TEG-REGEN', phase: PHASE.RICH_TEG, label: 'Rich TEG to regeneration', via: 'SDV-1101-01' },
+  { from: 'TEG-REGEN', to: 'C-1101-01', phase: PHASE.LEAN_TEG, label: 'Lean TEG to contactor top', recycle: true },
 
   { from: 'E-1001-02', to: 'V-2001-01', phase: PHASE.PRODUCED_WATER, label: 'Cooled produced water to degasser' },
   { from: 'V-2001-01', to: 'FLARE-LP', phase: PHASE.FLARE, label: 'Degasser off-gas to LP flare' },
@@ -164,6 +152,7 @@ export const BOUNDARY_NODES = {
   'FLARE-LP': { name: 'LP Flare Header', detail: 'to LP flare KO drum and flare package' },
   'FUEL-GAS-HEADER': { name: 'Fuel Gas Header', detail: 'power generation, compression, TEG stripping gas' },
   'U-3801-01': { name: 'Vapour Recovery Unit', detail: 'flash gas and regenerator vents' },
+  'TEG-REGEN': { name: 'TEG Regeneration', detail: 'flash drum, reboiler, surge vessel and circulation pumps — out of scope' },
   'AMINE-REGEN': { name: 'Amine Regeneration', detail: 'flash drum, regenerator, reboiler, surge vessel and circulation pumps — out of scope' },
   'EXPORT-PIPELINE': { name: 'Export Pipeline', detail: '6" to export station' },
 }
