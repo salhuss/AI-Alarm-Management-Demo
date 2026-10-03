@@ -980,3 +980,6 @@
 .insight-card-act:hover { background: #0a6aba; }
 .insight-card-act.secondary { flex: 0 0 80px; background: #3a3a3a; border-color: #555; }
 .insight-card-act.secondary:hover { background: #4a4a4a; }
+
+/* PFD page with no panels below: the diagram fills the screen. */
+.plant-pfd-page > .pfd:only-child { flex: 1 1 auto; }

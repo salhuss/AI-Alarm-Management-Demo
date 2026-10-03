@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import Equipment, { ValveSymbol } from './components/Equipment.jsx'
 import { EQUIPMENT_SIZE } from './components/equipmentSizes.js'
 import Faceplate from './components/Faceplate.jsx'
@@ -128,7 +128,7 @@ const pipeRuns = (placed, internal, stopped) => {
 export default function UnitPage({
   unit, values = {}, trendData = {}, unitState = 'normal',
   valveStates = {}, motorStates = {}, onBack,
-  isPaused, onTogglePause, onOverride, onClearOverride,
+  isPaused, onTogglePause, onOverride, onClearOverride, onUnitStateChange,
 }) {
   const trips = useUnitTrips({ unit, isPaused, onOverride, onClearOverride })
   const layout = useMemo(() => layoutUnit(unit), [unit])
@@ -143,6 +143,12 @@ export default function UnitPage({
   const mergedMotors = { ...motorStates, ...trips.motorStates }
 
   const stopped = effectiveState === 'tripped' || effectiveState === 'shutdown'
+
+  // Report this unit's state upward, so its block on the PFD reflects a trip
+  // run from here.
+  useEffect(() => {
+    onUnitStateChange?.(localTripped ? 'tripped' : 'normal')
+  }, [localTripped, onUnitStateChange])
   const runs = useMemo(
     () => pipeRuns(layout.placed, layout.internal, stopped),
     [layout, stopped],
