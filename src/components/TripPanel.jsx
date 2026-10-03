@@ -57,6 +57,7 @@ export default function TripPanel({
         </div>
       )}
 
+      <div className="trip-panel-scroll">
       <div className="trip-group">
         <div className="trip-group-head">ROOT CAUSE ANALYSIS — TRIP A TRANSMITTER</div>
         {trippable.length === 0 && (
@@ -111,10 +112,11 @@ export default function TripPanel({
           </span>
         </button>
       </div>
+      </div>
 
       {scenario && (
         <button className="trip-btn reset" onClick={onReset}>
-          ⟲ RESET UNIT
+          <span className="trip-btn-tag">⟲ RESET UNIT</span>
         </button>
       )}
     </div>
