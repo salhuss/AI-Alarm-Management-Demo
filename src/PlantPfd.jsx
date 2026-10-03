@@ -9,6 +9,11 @@ import './plant-view.css'
 /**
  * PFD landing page.
  *
+ * The production separator is the one unit without a generated page: it has
+ * its own hand-built screen in App.jsx, which predates all of this, so
+ * clicking it routes there via `onOpenSeparator` rather than drawing a
+ * second version of the same vessel.
+ *
  * The diagram alone: units, the streams between them, live headline values.
  * Clicking a unit opens its own page, where that unit's trips, alarms and
  * AI analysis live.
@@ -40,7 +45,7 @@ const fmt = (value, inst) => {
   return { value: value.toFixed(decimals), unit: inst.eng }
 }
 
-export default function PlantPfd() {
+export default function PlantPfd({ onOpenSeparator }) {
   const [drilledUnit, setDrilledUnit] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
 
@@ -91,7 +96,10 @@ export default function PlantPfd() {
         unitStates={unitStates}
         unitValues={unitValues}
         selectedUnit={null}
-        onSelectUnit={setDrilledUnit}
+        onSelectUnit={(unit) => {
+          if (unit === 'separator') onOpenSeparator?.()
+          else setDrilledUnit(unit)
+        }}
       />
     </div>
   )

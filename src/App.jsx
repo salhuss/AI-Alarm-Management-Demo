@@ -957,13 +957,22 @@ function App() {
         </button>
       </div>
 
-      {screen === 'pfd' && <PlantPfd />}
+      {screen === 'pfd' && <PlantPfd onOpenSeparator={() => setScreen('separator')} />}
       {screen === 'overview' && <PlantOverview />}
 
       {/* Main Display Area */}
       <div className="main-display" style={{ display: screen === 'separator' ? undefined : 'none' }}>
         <div className="process-container">
-          <h2 className="process-title">Production Separator - AI Alarm Management</h2>
+          <h2 className="process-title">
+            <button
+              className="separator-back"
+              onClick={() => setScreen('pfd')}
+              title="Back to the process flow diagram"
+            >
+              ← PROCESS FLOW
+            </button>
+            Production Separator - AI Alarm Management
+          </h2>
 
           {/* Scenario Buttons */}
           <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>

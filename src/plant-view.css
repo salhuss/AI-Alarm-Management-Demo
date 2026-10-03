@@ -1159,3 +1159,18 @@
 @media (max-width: 1500px) {
   .insight-card.wide .insight-card-body { columns: 2; }
 }
+
+/* Back link on the original separator screen, which the PFD now routes to
+   instead of generating a second page for the same vessel. */
+.separator-back {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  font: bold 10px Arial, sans-serif;
+  padding: 4px 9px;
+  margin-right: 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+.separator-back:hover { background: #0a5a9a; border-color: #0088ff; }
