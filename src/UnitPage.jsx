@@ -283,44 +283,54 @@ export default function UnitPage({
           ? <TrendGraph series={series} focusTag={ordered[0]?.tag} />
           : <div className="unit-page-empty">No trend data</div>}
 
-        {trips.insight ? (
-          <InsightCard
-            insight={trips.insight}
-            onDismiss={() => trips.setInsight(null)}
-            onAction={trips.insight.actionable ? trips.shelveSubject : undefined}
-            actionLabel="SHELVE FOR 2 HOURS"
-          />
-        ) : trips.alarms.length > 0 ? (
-          <AlarmSummary
-            alarms={trips.alarms}
-            onAcknowledge={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)))}
-            onShelve={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, shelved: true } : a)))}
-            aiSuppressing={0}
-          />
-        ) : (
-        <div className="unit-page-elements">
-          <div className="unit-page-panel-head">FINAL ELEMENTS</div>
-          <div className="unit-valve-row">
-            {sdvs.map((v) => (
-              <ValveSymbol key={v.tag} element={v} valveState={valveStateFor(v)} />
-            ))}
-            {sdvs.length === 0 && <span className="unit-page-empty">None</span>}
-          </div>
+        {/*
+          Right column stacks the AI analysis above the alarm summary rather
+          than replacing it. The contrast between the flood and the one-line
+          root cause is the point of the demo, so both have to be on screen
+          at once.
+        */}
+        <div className="unit-page-analysis">
+          {trips.insight && (
+            <InsightCard
+              insight={trips.insight}
+              onDismiss={() => trips.setInsight(null)}
+              onAction={trips.insight.actionable ? trips.shelveSubject : undefined}
+              actionLabel="SHELVE FOR 2 HOURS"
+            />
+          )}
 
-          {controlValves.length > 0 && (
-            <>
-              <div className="unit-page-panel-head sub">CONTROL VALVES</div>
-              {controlValves.map((v) => (
-                <div key={v.tag} className="unit-cv">
-                  <span className="unit-cv-tag">{v.tag}</span>
-                  <span className="unit-cv-sp">SP {v.setpoint} {v.eng}</span>
-                  <span className="unit-cv-by">← {v.drivenBy}</span>
-                </div>
-              ))}
-            </>
+          {trips.alarms.length > 0 ? (
+            <AlarmSummary
+              alarms={trips.alarms}
+              onAcknowledge={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)))}
+              onShelve={(id) => trips.setAlarms((prev) => prev.map((a) => (a.id === id ? { ...a, shelved: true } : a)))}
+              aiSuppressing={trips.insight ? trips.insight.consequences : 0}
+            />
+          ) : !trips.insight && (
+            <div className="unit-page-elements">
+              <div className="unit-page-panel-head">FINAL ELEMENTS</div>
+              <div className="unit-valve-row">
+                {sdvs.map((v) => (
+                  <ValveSymbol key={v.tag} element={v} valveState={valveStateFor(v)} />
+                ))}
+                {sdvs.length === 0 && <span className="unit-page-empty">None</span>}
+              </div>
+
+              {controlValves.length > 0 && (
+                <>
+                  <div className="unit-page-panel-head sub">CONTROL VALVES</div>
+                  {controlValves.map((v) => (
+                    <div key={v.tag} className="unit-cv">
+                      <span className="unit-cv-tag">{v.tag}</span>
+                      <span className="unit-cv-sp">SP {v.setpoint} {v.eng}</span>
+                      <span className="unit-cv-by">← {v.drivenBy}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
           )}
         </div>
-        )}
       </div>
     </div>
   )

@@ -17,14 +17,6 @@ import { EQUIPMENT, instrumentsForUnit } from './index.js'
 
 export const MAX_FACEPLATES = 3
 
-/**
- * Does this instrument sit on equipment that this unit draws?
- *
- * Matched on the tag's equipment number — LIT-3201-05 and C-3201-01 share
- * the 3201 series but differ in the item number, so the check is on the
- * service description naming the drawn equipment, falling back to including
- * the instrument when the unit draws everything.
- */
 /** Words too generic to identify a specific item of equipment. */
 const GENERIC = new Set([
   'unit', 'package', 'vessel', 'amine', 'glycol', 'water', 'produced',

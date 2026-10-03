@@ -748,8 +748,9 @@
   display: grid;
   grid-template-columns: 1fr 240px;
   gap: 8px;
-  flex: 1 1 42%;
-  min-height: 0;
+  /* Shares the space left after the fixed-height faceplate row. */
+  flex: 1 1 0;
+  min-height: 200px;
 }
 
 .unit-page-controls { overflow-y: auto; min-height: 0; }
@@ -773,8 +774,9 @@
 .unit-page-faceplates {
   display: flex;
   gap: 7px;
-  flex: 0 0 auto;
+  flex: 0 0 258px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 2px;
 }
 
@@ -792,10 +794,10 @@
 
 .unit-page-foot {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 360px;
   gap: 8px;
-  flex: 1 1 34%;
-  min-height: 170px;
+  flex: 1 1 0;
+  min-height: 230px;
 }
 
 .unit-page-elements {
@@ -1100,3 +1102,18 @@
 
 .vd-footer-value { flex: 1; text-align: right; font-weight: bold; font-variant-numeric: tabular-nums; }
 .vd-health { color: #aa5500; font-weight: bold; }
+
+/* Right column of the unit footer: AI analysis stacked above the alarm
+   summary, so the flood and its one-line explanation are both visible. */
+.unit-page-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The card takes what it needs; the summary absorbs the rest and scrolls. */
+.unit-page-analysis > .insight-card { flex: 0 1 auto; max-height: 62%; }
+.unit-page-analysis > .alarm-summary { flex: 1 1 auto; min-height: 90px; }
+.unit-page-analysis > .unit-page-elements { flex: 1 1 auto; }
