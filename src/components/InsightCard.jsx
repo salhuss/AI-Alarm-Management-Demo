@@ -7,27 +7,39 @@
  * flood and the analysis of the flood at the same time for the contrast to
  * land.
  */
-export default function InsightCard({ insight, onDismiss, onAction, actionLabel }) {
+export default function InsightCard({ insight, onDismiss, onAction, actionLabel, wide = false }) {
   if (!insight) return null
 
   return (
-    <div className={`insight-card ${insight.kind}`}>
+    <div className={`insight-card ${insight.kind}${wide ? ' wide' : ''}`}>
       <div className="insight-card-head">
         <span className="insight-card-icon">{insight.icon}</span>
         <span className="insight-card-title">{insight.title}</span>
         <button className="insight-card-close" onClick={onDismiss} title="Dismiss">✕</button>
       </div>
 
-      <div className="insight-card-headline">{insight.headline}</div>
-      <div className="insight-card-subtitle">{insight.subtitle}</div>
+      <div className="insight-card-main">
+        <div className="insight-card-lead">
+          <div className="insight-card-headline">{insight.headline}</div>
+          <div className="insight-card-subtitle">{insight.subtitle}</div>
+          {insight.consequences > 0 && (
+            <div className="insight-card-stat">
+              <span className="insight-card-stat-n">{insight.consequences}</span>
+              <span className="insight-card-stat-l">
+                consequential alarm{insight.consequences === 1 ? '' : 's'} grouped
+              </span>
+            </div>
+          )}
+        </div>
 
-      <div className="insight-card-body">
-        {insight.details.map((d, i) => (
-          <div key={i} className="insight-card-item">
-            <div className="insight-card-label">{d.label}</div>
-            <div className="insight-card-value">{d.value}</div>
-          </div>
-        ))}
+        <div className="insight-card-body">
+          {insight.details.map((d, i) => (
+            <div key={i} className="insight-card-item">
+              <div className="insight-card-label">{d.label}</div>
+              <div className="insight-card-value">{d.value}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {onAction && (

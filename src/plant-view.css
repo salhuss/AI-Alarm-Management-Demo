@@ -794,10 +794,10 @@
 
 .unit-page-foot {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 320px;
   gap: 8px;
   flex: 1 1 0;
-  min-height: 230px;
+  min-height: 190px;
 }
 
 .unit-page-elements {
@@ -1103,17 +1103,80 @@
 .vd-footer-value { flex: 1; text-align: right; font-weight: bold; font-variant-numeric: tabular-nums; }
 .vd-health { color: #aa5500; font-weight: bold; }
 
-/* Right column of the unit footer: AI analysis stacked above the alarm
-   summary, so the flood and its one-line explanation are both visible. */
-.unit-page-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+
+/* ---------------------------------------- AI analysis as a full-width band --- */
+
+.insight-card.wide {
+  flex: 0 0 auto;
+  max-height: 236px;
+}
+
+/* Lead column carries the headline and the alarm count; the details flow in
+   newspaper columns beside it, so long text uses the width instead of
+   scrolling in a narrow box. */
+.insight-card.wide .insight-card-main {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
   min-height: 0;
   overflow: hidden;
 }
 
-/* The card takes what it needs; the summary absorbs the rest and scrolls. */
-.unit-page-analysis > .insight-card { flex: 0 1 auto; max-height: 62%; }
-.unit-page-analysis > .alarm-summary { flex: 1 1 auto; min-height: 90px; }
-.unit-page-analysis > .unit-page-elements { flex: 1 1 auto; }
+.insight-card.wide .insight-card-lead {
+  padding: 9px 12px;
+  border-right: 1px solid #1e3448;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.insight-card.wide .insight-card-headline {
+  padding: 0;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.insight-card.wide .insight-card-subtitle {
+  padding: 0;
+  border-bottom: none;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.insight-card-stat {
+  margin-top: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.insight-card-stat-n {
+  font: bold 30px 'Courier New', monospace;
+  color: #ffaa00;
+  line-height: 1;
+}
+
+.insight-card-stat-l { font-size: 9px; color: #9bb; line-height: 1.2; }
+
+.insight-card.wide .insight-card-body {
+  padding: 9px 12px;
+  columns: 3;
+  column-gap: 18px;
+  column-rule: 1px solid #1e3448;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.insight-card.wide .insight-card-item {
+  margin: 0 0 9px;
+  break-inside: avoid;
+}
+
+.insight-card.wide .insight-card-value { font-size: 9.5px; line-height: 1.4; }
+.insight-card.wide .insight-card-actions { border-top: 1px solid #1e3448; }
+
+/* Narrower screens cannot carry three text columns legibly. */
+@media (max-width: 1500px) {
+  .insight-card.wide .insight-card-body { columns: 2; }
+}
