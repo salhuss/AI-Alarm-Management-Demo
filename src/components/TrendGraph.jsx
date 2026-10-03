@@ -11,8 +11,8 @@
 
 const W = 560
 const H = 200
-const PAD_L = 4
-const PAD_R = 44
+const PAD_L = 6
+const PAD_R = 0
 
 const TRACE_COLORS = ['#4a9a4a', '#c89000', '#3a8fd0', '#9a7ac0', '#c05a5a']
 
@@ -65,10 +65,33 @@ export default function TrendGraph({ series, focusTag, windowSeconds = 60 }) {
       </div>
 
       <div className="trend-plot">
-        <svg viewBox={`0 0 ${W} ${H}`} className="trend-svg" role="img" aria-label="Process trend">
+        {/* Limit labels as HTML, overlaid on the plot. Text inside the
+            stretched svg would be distorted by preserveAspectRatio="none". */}
+        <div className="trend-limit-labels">
+          {limits.map((l) => (
+            <span
+              key={l.key}
+              className="trend-limit-label"
+              style={{ top: `${100 - norm(l.v, range)}%`, color: l.color }}
+            >
+              {l.key} {l.v}
+            </span>
+          ))}
+        </div>
+
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          className="trend-svg"
+          role="img"
+          aria-label="Process trend"
+        >
           {/* Grid */}
-          {[25, 50, 75].map((n) => (
-            <line key={n} x1={PAD_L} y1={toY(n)} x2={W - PAD_R} y2={toY(n)} stroke="#333" strokeWidth="1" />
+          {[20, 40, 60, 80].map((n) => (
+            <line
+              key={n} x1={PAD_L} y1={toY(n)} x2={W - PAD_R} y2={toY(n)}
+              stroke="#333" strokeWidth="1" vectorEffect="non-scaling-stroke"
+            />
           ))}
 
           {/* Limit lines for the focused instrument */}
@@ -80,10 +103,9 @@ export default function TrendGraph({ series, focusTag, windowSeconds = 60 }) {
                   x1={PAD_L} y1={y} x2={W - PAD_R} y2={y}
                   stroke={l.color} strokeWidth="1.5"
                   strokeDasharray={l.dash ?? undefined}
+                  vectorEffect="non-scaling-stroke"
                 />
-                <text x={W - PAD_R + 4} y={y + 3} className="trend-limit-label" fill={l.color}>
-                  {l.key} {l.v}
-                </text>
+
               </g>
             )
           })}
@@ -102,8 +124,10 @@ export default function TrendGraph({ series, focusTag, windowSeconds = 60 }) {
                 points={points(s.data, s.instrument.range)}
                 fill="none"
                 stroke={breached ? '#ff3333' : TRACE_COLORS[i % TRACE_COLORS.length]}
-                strokeWidth={s.instrument.tag === focus.instrument.tag ? 2 : 1.4}
-                opacity={s.instrument.tag === focus.instrument.tag ? 1 : 0.75}
+                strokeWidth={s.instrument.tag === focus.instrument.tag ? 2.4 : 1.8}
+                opacity={s.instrument.tag === focus.instrument.tag ? 1 : 0.85}
+                vectorEffect="non-scaling-stroke"
+                strokeLinejoin="round"
               />
             )
           })}
@@ -111,18 +135,24 @@ export default function TrendGraph({ series, focusTag, windowSeconds = 60 }) {
       </div>
 
       <div className="trend-legend">
-        {active.map((s, i) => (
-          <span key={s.instrument.tag} className="trend-legend-item">
+        {active.map((s, i) => {
+          const color = TRACE_COLORS[i % TRACE_COLORS.length]
+          const isFocus = s.instrument.tag === focus.instrument.tag
+          return (
             <span
-              className="trend-legend-swatch"
-              style={{ backgroundColor: TRACE_COLORS[i % TRACE_COLORS.length] }}
-            />
-            {s.instrument.tag}
-            <span className="trend-legend-val">
-              {s.data.at(-1)?.toFixed(s.instrument.eng === 'mm' ? 0 : 1)} {s.instrument.eng}
+              key={s.instrument.tag}
+              className={`trend-legend-item${isFocus ? ' focus' : ''}`}
+              style={{ borderColor: color, backgroundColor: `${color}22` }}
+            >
+              <span className="trend-legend-swatch" style={{ backgroundColor: color }} />
+              <span className="trend-legend-tag" style={{ color }}>{s.instrument.tag}</span>
+              <span className="trend-legend-val">
+                {s.data.at(-1)?.toFixed(s.instrument.eng === 'mm' ? 0 : 1)}
+                <small>{s.instrument.eng}</small>
+              </span>
             </span>
-          </span>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
