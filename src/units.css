@@ -16,7 +16,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 430px;
+  min-height: 0;
   min-width: 520px;
 }
 
@@ -25,7 +25,7 @@
 .au-tower {
   position: absolute;
   left: 50%;
-  top: 46px;
+  top: 26px;
   transform: translateX(-50%);
   width: 108px;
   display: flex;
@@ -51,7 +51,7 @@
 .au-tower-shell {
   position: relative;
   width: 108px;
-  height: 268px;
+  height: 198px;
   overflow: hidden;
   border: 3px solid #141414;
   border-top: none;
@@ -94,7 +94,7 @@
 
 .au-trays {
   position: absolute;
-  inset: 12px 9px 26px;
+  inset: 10px 9px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -230,19 +230,19 @@
 /* ------------------------------------------------------- stream geometry --- */
 
 /* Lean amine: in from the left, turns down into the tower head */
-.au-amine-in .au-pipe-h { left: 60px; top: 30px; width: calc(50% - 114px); }
-.au-amine-in .au-pipe-v { left: calc(50% - 54px); top: 30px; height: 22px; }
+.au-amine-in .au-pipe-h { left: 60px; top: 10px; width: calc(50% - 114px); }
+.au-amine-in .au-pipe-v { left: calc(50% - 54px); top: 10px; height: 22px; }
 
 /* Sweet gas: up out of the tower head, turns right */
-.au-sweet-out .au-pipe-v { left: calc(50% + 43px); top: 18px; height: 34px; }
-.au-sweet-out .au-pipe-h { left: calc(50% + 43px); top: 18px; width: calc(50% - 103px); }
+.au-sweet-out .au-pipe-v { left: calc(50% + 43px); top: 6px; height: 26px; }
+.au-sweet-out .au-pipe-h { left: calc(50% + 43px); top: 6px; width: calc(50% - 103px); }
 
 /* Sour gas: in from the left near the base, turns up into the shell */
-.au-sour-in .au-pipe-h { left: 60px; top: 304px; width: calc(50% - 114px); }
-.au-sour-in .au-pipe-v { left: calc(50% - 54px); top: 274px; height: 41px; }
+.au-sour-in .au-pipe-h { left: 60px; top: 214px; width: calc(50% - 114px); }
+.au-sour-in .au-pipe-v { left: calc(50% - 54px); top: 184px; height: 41px; }
 
 /* Rich amine: straight down out of the skirt */
-.au-rich-out .au-pipe-v { left: calc(50% - 5px); top: 370px; height: 38px; }
+.au-rich-out .au-pipe-v { left: calc(50% - 5px); top: 250px; height: 32px; }
 
 /* ---------------------------------------------------------------- labels --- */
 
@@ -258,10 +258,10 @@
 
 .au-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }
 
-.au-amine-label { left: 8px; top: 20px; color: #cd9150; align-items: flex-start; }
-.au-sweet-label { right: 8px; top: 6px; color: #5fb85f; align-items: flex-end; text-align: right; }
-.au-sour-label { left: 8px; top: 294px; color: #c89000; align-items: flex-start; }
-.au-rich-label { left: calc(50% + 14px); top: 384px; color: #a06a34; align-items: flex-start; }
+.au-amine-label { left: 8px; top: 0px; color: #cd9150; align-items: flex-start; }
+.au-sweet-label { right: 8px; top: 0px; color: #5fb85f; align-items: flex-end; text-align: right; }
+.au-sour-label { left: 8px; top: 204px; color: #c89000; align-items: flex-start; }
+.au-rich-label { left: calc(50% + 14px); top: 266px; color: #a06a34; align-items: flex-start; }
 
 /* Arrowheads showing direction of flow */
 .au-label::after {
@@ -286,7 +286,7 @@
 .unit-custom-graphic {
   width: 100%;
   height: 100%;
-  min-height: 430px;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;

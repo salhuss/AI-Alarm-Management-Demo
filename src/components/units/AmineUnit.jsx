@@ -75,7 +75,7 @@ export default function AmineUnit({ values = {}, unitState = 'normal' }) {
         <div className="au-tower-shell">
           {/* Contact trays, top to bottom */}
           <div className="au-trays">
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="au-tray">
                 <span className="au-tray-cap" />
                 <span className="au-tray-cap" />

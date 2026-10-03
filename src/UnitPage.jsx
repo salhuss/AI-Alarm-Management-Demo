@@ -260,31 +260,13 @@ export default function UnitPage({
         </div>
       </div>
 
-      {/* Faceplates: their own row, so they are all visible at once */}
-      <div className="unit-page-faceplates">
-        {ordered.map((inst) => {
-          // Faceplates that have a line on the trend carry its colour.
-          const seriesIndex = series.findIndex((s) => s.instrument.tag === inst.tag)
-          return (
-            <Faceplate
-              key={inst.tag}
-              instrument={inst}
-              value={values[inst.tag] ?? inst.envelope?.normal ?? inst.setpoint}
-              health={trips.health[inst.tag] ?? 100}
-              traceColor={seriesIndex >= 0 ? traceColorFor(seriesIndex) : undefined}
-            />
-          )
-        })}
-        {ordered.length === 0 && <div className="unit-page-empty">No instruments on this unit</div>}
-      </div>
-
       {/*
-        AI analysis gets its own full-width band across the page, between
-        the faceplates and the footer. It was previously boxed into the
-        footer's 360px right column sharing height with the alarm summary,
-        which left the longest text in the smallest space.
+        One band below the graphic, shared: faceplates when idle, the AI
+        analysis while a scenario runs. Giving the analysis its own row as
+        well left the process graphic 230px against the 430px the tower
+        needs, so it scrolled — and the graphic is the subject of the page.
       */}
-      {trips.insight && (
+      {trips.insight ? (
         <InsightCard
           insight={trips.insight}
           onDismiss={() => trips.setInsight(null)}
@@ -292,6 +274,23 @@ export default function UnitPage({
           actionLabel="SHELVE FOR 2 HOURS"
           wide
         />
+      ) : (
+        <div className="unit-page-faceplates">
+          {ordered.map((inst) => {
+            // Faceplates that have a line on the trend carry its colour.
+            const seriesIndex = series.findIndex((s) => s.instrument.tag === inst.tag)
+            return (
+              <Faceplate
+                key={inst.tag}
+                instrument={inst}
+                value={values[inst.tag] ?? inst.envelope?.normal ?? inst.setpoint}
+                health={trips.health[inst.tag] ?? 100}
+                traceColor={seriesIndex >= 0 ? traceColorFor(seriesIndex) : undefined}
+              />
+            )
+          })}
+          {ordered.length === 0 && <div className="unit-page-empty">No instruments on this unit</div>}
+        </div>
       )}
 
       <div className="unit-page-foot">

@@ -1107,8 +1107,10 @@
 /* ---------------------------------------- AI analysis as a full-width band --- */
 
 .insight-card.wide {
-  flex: 0 0 auto;
-  max-height: 236px;
+  /* Occupies the faceplate row's slot, so it takes exactly that height and
+     nothing else on the page shrinks. */
+  flex: 0 0 258px;
+  min-height: 0;
 }
 
 /* Lead column carries the headline and the alarm count; the details flow in
