@@ -7,6 +7,15 @@ import TripPanel from './components/TripPanel.jsx'
 import InsightCard from './components/InsightCard.jsx'
 import AlarmSummary from './components/AlarmSummary.jsx'
 import useUnitTrips from './hooks/useUnitTrips.js'
+import AmineUnit from './components/units/AmineUnit.jsx'
+
+/**
+ * Units with a purpose-drawn graphic. Anything not listed here falls back
+ * to the generic topology-driven layout until it gets its own drawing.
+ */
+const CUSTOM_GRAPHIC = {
+  amine: AmineUnit,
+}
 import { EQUIPMENT, STREAMS, instrumentsForUnit, finalElementsForUnit } from './plant/index.js'
 import { PHASE_STYLE, UNIT_LAYOUT } from './plant/layout.js'
 import { MOTOR_STATE, VALVE_STATE } from './plant/hmiStates.js'
@@ -131,6 +140,7 @@ export default function UnitPage({
   isPaused, onTogglePause, onOverride, onClearOverride, onUnitStateChange,
 }) {
   const trips = useUnitTrips({ unit, isPaused, onOverride, onClearOverride })
+  const CustomGraphic = CUSTOM_GRAPHIC[unit]
   const layout = useMemo(() => layoutUnit(unit), [unit])
   const instruments = useMemo(() => instrumentsForUnit(unit), [unit])
   const valves = useMemo(() => finalElementsForUnit(unit), [unit])
@@ -185,45 +195,51 @@ export default function UnitPage({
         <h2 className="unit-page-title">{meta?.label ?? unit}</h2>
         <span className="unit-page-sub">{meta?.sublabel}</span>
         <span className="unit-page-count">
-          {layout.placed.length} equipment · {instruments.length} instruments · {valves.length} final elements
+          {CustomGraphic ? '' : `${layout.placed.length} equipment · `}{instruments.length} instruments · {valves.length} final elements
         </span>
         <span className={`unit-page-state ${effectiveState}`}>{effectiveState.toUpperCase()}</span>
       </div>
 
       <div className="unit-page-main">
-        {/* Process canvas */}
+        {/* Process graphic: purpose-drawn where one exists */}
         <div className="unit-canvas-wrap">
-          <div
-            className="unit-canvas"
-            style={{ width: layout.width, height: layout.height }}
-          >
-            {runs.map((r) => (
-              <div
-                key={r.key}
-                className={`eqp-pipe${r.vertical ? ' vertical' : ''}${r.stopped ? ' stopped' : ''}`}
-                style={{
-                  left: r.left, top: r.top, width: r.width, height: r.height,
-                  borderTopColor: r.vertical ? undefined : r.style.color,
-                  borderBottomColor: r.vertical ? undefined : r.style.color,
-                  borderLeftColor: r.vertical ? r.style.color : undefined,
-                  borderRightColor: r.vertical ? r.style.color : undefined,
-                }}
-                title={r.stream.label}
-              />
-            ))}
-
-            {layout.placed.map(({ item, x, y }) => (
-              <div key={item.tag} className="unit-canvas-item" style={{ left: x, top: y }}>
-                <Equipment
-                  item={item}
-                  value={values[item.tag]}
-                  state={effectiveState}
-                  motorState={motorStateFor(item)}
-                  fansRunning={stopped ? 0 : item.fans?.length}
+          {CustomGraphic ? (
+            <div className="unit-custom-graphic">
+              <CustomGraphic values={values} unitState={effectiveState} />
+            </div>
+          ) : (
+            <div
+              className="unit-canvas"
+              style={{ width: layout.width, height: layout.height }}
+            >
+              {runs.map((r) => (
+                <div
+                  key={r.key}
+                  className={`eqp-pipe${r.vertical ? ' vertical' : ''}${r.stopped ? ' stopped' : ''}`}
+                  style={{
+                    left: r.left, top: r.top, width: r.width, height: r.height,
+                    borderTopColor: r.vertical ? undefined : r.style.color,
+                    borderBottomColor: r.vertical ? undefined : r.style.color,
+                    borderLeftColor: r.vertical ? r.style.color : undefined,
+                    borderRightColor: r.vertical ? r.style.color : undefined,
+                  }}
+                  title={r.stream.label}
                 />
-              </div>
-            ))}
-          </div>
+              ))}
+
+              {layout.placed.map(({ item, x, y }) => (
+                <div key={item.tag} className="unit-canvas-item" style={{ left: x, top: y }}>
+                  <Equipment
+                    item={item}
+                    value={values[item.tag]}
+                    state={effectiveState}
+                    motorState={motorStateFor(item)}
+                    fansRunning={stopped ? 0 : item.fans?.length}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Faceplates, fixed column */}

@@ -1,0 +1,295 @@
+/*
+ * Purpose-drawn unit graphics.
+ *
+ * Each stage gets its own arrangement rather than a generic layout, because
+ * process equipment has a specific geometry — a contactor tower is tall and
+ * trayed with counter-current flow, and no placement algorithm produces
+ * that convincingly.
+ *
+ * Vessel treatment follows the existing production separator in App.css:
+ * metallic body gradient, blurred specular highlight, floor shadow.
+ */
+
+/* =========================================================== amine unit === */
+
+.amine-unit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 430px;
+  min-width: 520px;
+}
+
+/* ------------------------------------------------------------- the tower --- */
+
+.au-tower {
+  position: absolute;
+  left: 50%;
+  top: 46px;
+  transform: translateX(-50%);
+  width: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+/* Domed head */
+.au-tower-head {
+  width: 108px;
+  height: 30px;
+  border: 3px solid #141414;
+  border-bottom: none;
+  border-radius: 54px 54px 0 0;
+  background: linear-gradient(to right,
+    #2a2a2a 0%, #606060 10%, #a8a8a8 28%, #e4e4e4 46%,
+    #ffffff 52%, #e4e4e4 60%, #a8a8a8 76%, #606060 92%, #2a2a2a 100%);
+  box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Shell: vertical cylinder, so the gradient runs left-to-right */
+.au-tower-shell {
+  position: relative;
+  width: 108px;
+  height: 268px;
+  overflow: hidden;
+  border: 3px solid #141414;
+  border-top: none;
+  border-bottom: none;
+  background: linear-gradient(to right,
+    #2a2a2a 0%, #606060 10%, #a8a8a8 28%, #e4e4e4 46%,
+    #ffffff 52%, #e4e4e4 60%, #a8a8a8 76%, #606060 92%, #2a2a2a 100%);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.8),
+    inset 8px 0 22px rgba(255, 255, 255, 0.4),
+    inset -8px 0 22px rgba(0, 0, 0, 0.45);
+}
+
+/* Conical skirt / support */
+.au-tower-skirt {
+  width: 108px;
+  height: 26px;
+  border: 3px solid #141414;
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(to right,
+    #222 0%, #4a4a4a 12%, #8a8a8a 30%, #b8b8b8 50%,
+    #8a8a8a 70%, #4a4a4a 88%, #222 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+}
+
+.amine-unit.tripped .au-tower-head,
+.amine-unit.tripped .au-tower-shell,
+.amine-unit.tripped .au-tower-skirt { border-color: #7a1515; }
+
+.amine-unit.tripped .au-tower-shell {
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.8),
+    0 0 22px rgba(204, 34, 34, 0.45),
+    inset 8px 0 22px rgba(255, 200, 200, 0.3),
+    inset -8px 0 22px rgba(60, 0, 0, 0.5);
+}
+
+/* ------------------------------------------------------------------ trays --- */
+
+.au-trays {
+  position: absolute;
+  inset: 12px 9px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.au-tray {
+  height: 0;
+  border-top: 1.5px solid rgba(30, 30, 30, 0.55);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+/* Bubble caps on each tray */
+.au-tray-cap {
+  width: 5px;
+  height: 3px;
+  margin-top: -3px;
+  background: rgba(40, 40, 40, 0.5);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ------------------------------------------------- counter-current flow --- */
+
+/* Gas rising through the trays */
+.au-flow-up {
+  position: absolute;
+  inset: 20px 34px 30px;
+  z-index: 1;
+  background: repeating-linear-gradient(to top,
+    rgba(200, 144, 0, 0.30) 0px, rgba(200, 144, 0, 0.30) 4px,
+    transparent 4px, transparent 15px);
+  animation: au-rise 1.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes au-rise { to { background-position: 0 -15px; } }
+
+/* Amine falling down the walls */
+.au-flow-down {
+  position: absolute;
+  inset: 16px 12px 30px;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(to bottom,
+      rgba(205, 145, 80, 0.45) 0px, rgba(205, 145, 80, 0.45) 6px,
+      transparent 6px, transparent 22px) left / 5px 100% repeat-y,
+    repeating-linear-gradient(to bottom,
+      rgba(205, 145, 80, 0.45) 0px, rgba(205, 145, 80, 0.45) 6px,
+      transparent 6px, transparent 22px) right / 5px 100% repeat-y;
+  animation: au-fall 1.9s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes au-fall { to { background-position-y: 22px; } }
+
+/* --------------------------------------------------------- amine in sump --- */
+
+.au-level {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom,
+    rgba(150, 90, 40, 0.80) 0%,
+    rgba(185, 120, 55, 0.88) 30%,
+    rgba(205, 145, 80, 0.92) 50%,
+    rgba(185, 120, 55, 0.88) 70%,
+    rgba(150, 90, 40, 0.80) 100%);
+  box-shadow:
+    inset 0 5px 14px rgba(255, 255, 255, 0.45),
+    inset 0 -5px 14px rgba(0, 0, 0, 0.45);
+  transition: height 0.5s ease;
+}
+
+.amine-unit.tripped .au-level { filter: saturate(0.45) brightness(0.65); }
+
+/* ------------------------------------------------------------- nameplate --- */
+
+.au-tower-plate {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #141414;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.au-tower-tag { font: bold 13px Arial, sans-serif; letter-spacing: 0.3px; }
+.au-tower-name { font: 7.5px Arial, sans-serif; letter-spacing: 0.4px; }
+.au-tower-value { font: bold 12px 'Courier New', monospace; margin-top: 3px; }
+.au-tower-value small { font-size: 8px; font-weight: normal; }
+
+/* ----------------------------------------------------------------- pipes --- */
+
+.au-pipe-h, .au-pipe-v { position: absolute; }
+
+.au-pipe-h {
+  height: 11px;
+  background: linear-gradient(to bottom, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-top: 1px solid #141414;
+  border-bottom: 1px solid #141414;
+}
+
+.au-pipe-v {
+  width: 11px;
+  background: linear-gradient(to right, #3a3a3a, #8e8e8e 42%, #c8c8c8 50%, #8e8e8e 58%, #3a3a3a);
+  border-left: 1px solid #141414;
+  border-right: 1px solid #141414;
+}
+
+/* Service tint on the pipe runs */
+.au-pipe-h.au-sour, .au-pipe-v.au-sour { box-shadow: inset 0 0 8px rgba(200, 144, 0, 0.55); }
+.au-pipe-h.au-sweet, .au-pipe-v.au-sweet { box-shadow: inset 0 0 8px rgba(74, 154, 74, 0.55); }
+.au-pipe-h.au-amine, .au-pipe-v.au-amine { box-shadow: inset 0 0 8px rgba(205, 145, 80, 0.55); }
+.au-pipe-h.au-rich, .au-pipe-v.au-rich { box-shadow: inset 0 0 8px rgba(150, 90, 40, 0.6); }
+
+.amine-unit.tripped .au-pipe-h,
+.amine-unit.tripped .au-pipe-v { filter: saturate(0.3) brightness(0.55); }
+
+/* ------------------------------------------------------- stream geometry --- */
+
+/* Lean amine: in from the left, turns down into the tower head */
+.au-amine-in .au-pipe-h { left: 60px; top: 30px; width: calc(50% - 114px); }
+.au-amine-in .au-pipe-v { left: calc(50% - 54px); top: 30px; height: 22px; }
+
+/* Sweet gas: up out of the tower head, turns right */
+.au-sweet-out .au-pipe-v { left: calc(50% + 43px); top: 18px; height: 34px; }
+.au-sweet-out .au-pipe-h { left: calc(50% + 43px); top: 18px; width: calc(50% - 103px); }
+
+/* Sour gas: in from the left near the base, turns up into the shell */
+.au-sour-in .au-pipe-h { left: 60px; top: 304px; width: calc(50% - 114px); }
+.au-sour-in .au-pipe-v { left: calc(50% - 54px); top: 274px; height: 41px; }
+
+/* Rich amine: straight down out of the skirt */
+.au-rich-out .au-pipe-v { left: calc(50% - 5px); top: 370px; height: 38px; }
+
+/* ---------------------------------------------------------------- labels --- */
+
+.au-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  font: bold 9px Arial, sans-serif;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.au-label-sub { font: 7px Arial, sans-serif; font-weight: normal; color: #7a8288; letter-spacing: 0; }
+
+.au-amine-label { left: 8px; top: 20px; color: #cd9150; align-items: flex-start; }
+.au-sweet-label { right: 8px; top: 6px; color: #5fb85f; align-items: flex-end; text-align: right; }
+.au-sour-label { left: 8px; top: 294px; color: #c89000; align-items: flex-start; }
+.au-rich-label { left: calc(50% + 14px); top: 384px; color: #a06a34; align-items: flex-start; }
+
+/* Arrowheads showing direction of flow */
+.au-label::after {
+  content: '';
+  position: absolute;
+  width: 0; height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.au-amine-label::after { border-left: 7px solid #cd9150; right: -14px; top: 3px; }
+.au-sweet-label::after { border-left: 7px solid #5fb85f; right: -14px; top: 3px; }
+.au-sour-label::after { border-left: 7px solid #c89000; right: -14px; top: 3px; }
+.au-rich-label::after {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid #a06a34;
+  left: -16px; top: 2px;
+}
+
+/* Container for a purpose-drawn unit graphic */
+.unit-custom-graphic {
+  width: 100%;
+  height: 100%;
+  min-height: 430px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
