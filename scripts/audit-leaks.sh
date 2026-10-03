@@ -74,8 +74,43 @@ if [ -n "$DOCS" ]; then
     FAIL=1
 fi
 
+# Audit the BUILD OUTPUT too, not just tracked files.
+#
+# This gap shipped real tags to the live site: the gitignored overlay is
+# correctly untracked, so the tracked-file scan passed, but
+# import.meta.glob is a compile-time transform and inlined the overlay into
+# the production bundle anyway. vite.config.js now excludes it at the
+# bundler level; this check makes sure that keeps working.
+if [ -d dist ]; then
+    for pat in "${GENERIC[@]}"; do
+        HITS=$(grep -rlI -- "$pat" dist/ 2>/dev/null || true)
+        if [ -n "$HITS" ]; then
+            echo "LEAK  '$pat' in the BUILD OUTPUT:"
+            echo "$HITS" | sed 's/^/        /'
+            FAIL=1
+        fi
+    done
+    if [ -f "$PATTERN_FILE" ]; then
+        N=0
+        while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            N=$((N + 1))
+            HITS=$(grep -rlI -- "$line" dist/ 2>/dev/null || true)
+            if [ -n "$HITS" ]; then
+                echo "LEAK  '${line:0:2}…' (pattern $N) in the BUILD OUTPUT:"
+                echo "$HITS" | sed 's/^/        /'
+                FAIL=1
+            fi
+        done < "$PATTERN_FILE"
+    fi
+    echo "  (also audited dist/ — the published build)"
+else
+    echo "  NOTE: no dist/ to audit. Run npm run build before deploying."
+fi
+
 if [ "$FAIL" -eq 0 ]; then
-    echo "✓ No confidential plant data in tracked files"
+    echo "✓ No confidential plant data in tracked files or the build"
 else
     echo ""
     echo "✗ Audit failed — do not push until resolved."

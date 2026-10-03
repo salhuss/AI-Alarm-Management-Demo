@@ -10,9 +10,18 @@
  * Both datasets export the same shape, so nothing downstream knows or cares
  * which is loaded. `DATASET` says which one won, for the HMI banner.
  *
- * Vite resolves import.meta.glob at build time, so the fallback costs
- * nothing at runtime and the real modules are simply absent from a public
- * build rather than bundled-but-unused.
+ * CRITICAL: the overlay is loaded in DEV ONLY.
+ *
+ * import.meta.glob resolves at build time against the filesystem, so a
+ * production build run on a machine that has ./real/ present would inline
+ * the real tags straight into the bundle — which is exactly what happens
+ * when deploying from a working copy. The leak audit checks git-tracked
+ * files and the overlay is correctly untracked, so it passed while the
+ * build embedded the data anyway.
+ *
+ * Gating on import.meta.env.DEV means the glob is statically false in a
+ * production build and Vite drops the branch entirely. A production bundle
+ * therefore contains only the synthetic dataset, whatever is on disk.
  */
 
 import * as syntheticEffects from './effects.js'
@@ -21,7 +30,9 @@ import * as syntheticAmine from './amine.js'
 import * as syntheticTopology from './topology.js'
 import * as syntheticInstruments from './instruments.js'
 
-const realModules = import.meta.glob('./real/*.real.js', { eager: true })
+const realModules = import.meta.env.DEV
+  ? import.meta.glob('./real/*.real.js', { eager: true })
+  : {}
 
 const pick = (name, synthetic) => {
   const real = realModules[`./real/${name}.real.js`]
